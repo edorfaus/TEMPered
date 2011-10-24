@@ -1,0 +1,28 @@
+This project started as the idea of combining the various programs and
+libraries for reading the TEMPer thermometer devices into one general library
+that could read them all, providing a unified interface to applications.
+
+This is, of course, complicated by the fact that I currently only have one
+variant of those devices myself, namely the TEMPerV1.2 USB HID device.
+
+On the way, I realized that, at least the program[1] that works for the device
+I actually have, basically implements the HID standard, because it's based on
+replicating what is seen with USB sniffing.
+
+To avoid this, I looked for a HID library, and found HIDAPI, which in addition
+to being open source is also cross-platform, which is positive.
+
+This enabled me to fairly quickly make a much simpler program than the original
+that does basically the same thing, namely read the temperature off the sensor.
+
+As yet, this is as far as I have gotten - there's currently just a pair of
+programs, one that enumerates the devices attached to the system, and one that
+reads the temperature off either all supported devices, or the specified ones.
+
+I have not yet implemented all the features of Cray's pcsensor program though,
+and may not get around to doing that for quite a while, as I don't need them.
+
+
+
+[1] The program I'm talking about is called pcsensor-1.0.0, by Cray, seen here:
+http://relavak.wordpress.com/2009/10/17/temper-temperature-sensor-linux-driver/#comment-202
