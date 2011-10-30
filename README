@@ -9,8 +9,8 @@ On the way, I realized that, at least the program[1] that works for the device
 I actually have, basically implements the HID standard, because it's based on
 replicating what is seen with USB sniffing.
 
-To avoid this, I looked for a HID library, and found HIDAPI, which in addition
-to being open source is also cross-platform, which is positive.
+To avoid this, I looked for a HID library, and found HIDAPI[2], which in
+addition to being open source is also cross-platform, which is positive.
 
 This enabled me to fairly quickly make a much simpler program than the original
 that does basically the same thing, namely read the temperature off the sensor.
@@ -23,6 +23,19 @@ I have not yet implemented all the features of Cray's pcsensor program though,
 and may not get around to doing that for quite a while, as I don't need them.
 
 
+To build the programs, first clone both this and HIDAPI[2], then build HIDAPI
+for your platform (I mostly use the Linux/hidraw implementation), then adjust
+the path in the Makefile (if necessary) to point to the built HIDAPI source,
+then run make.
+
+For this to work properly, you will probably need to have installed the -dev
+packages for libudev and/or libusb first (for the right library versions).
+
+
 
 [1] The program I'm talking about is called pcsensor-1.0.0, by Cray, seen here:
 http://relavak.wordpress.com/2009/10/17/temper-temperature-sensor-linux-driver/#comment-202
+
+[2] The HIDAPI library can be found here: http://www.signal11.us/oss/hidapi/
+with source on GitHub here: https://github.com/signal11/hidapi
+This project uses features not available in version 0.6; use 0.7 or newer.
