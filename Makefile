@@ -12,7 +12,7 @@ PROGRAMS=temperhid enumerate
 all: $(PROGRAMS)
 
 CC=gcc
-OBJS=
+OBJS=temper_type.o
 CFLAGS+=-I$(HIDAPI_DIR)/hidapi -Wall -g `pkg-config libusb-1.0 --cflags`
 HIDAPI_LIB=$(HIDAPI_DIR)/$(HIDAPI_OBJ)
 LIBS=`pkg-config libusb-1.0 libudev --libs`
@@ -25,7 +25,7 @@ $(PROGRAMS): %: %.c $(OBJS) $(HIDAPI_LIB)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 $(OBJS): %.o: %.c
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(PROGRAMS)

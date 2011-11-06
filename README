@@ -15,6 +15,13 @@ addition to being open source is also cross-platform, which is positive.
 This enabled me to fairly quickly make a much simpler program than the original
 that does basically the same thing, namely read the temperature off the sensor.
 
+Later, I changed some parts and added code to support more of the HID devices
+that work in a similar way. As yet I've only added support for the temperature
+part of the TEMPer2HumiV1.0 (0c45:7402), on the assumption that the USB IDs are
+the only things that need to be different (which seems to be right according to
+a comment in the same thread as [1], but has not yet been tested). However, the
+code is written to be ready for other variants that work slightly differently.
+
 As yet, this is as far as I have gotten - there's currently just a pair of
 programs, one that enumerates the devices attached to the system, and one that
 reads the temperature off either all supported devices, or the specified ones.

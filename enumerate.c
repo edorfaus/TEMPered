@@ -1,18 +1,22 @@
+#include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "hidapi.h"
+#include "temper_type.h"
 
 int main( int argc, char **argv )
 {
 	struct hid_device_info *devs, *info;
-	int list_all = 0, i;
+	bool list_all = false;
+	int i;
 	
 	for ( i = 1; i < argc; i++ )
 	{
 		if ( strcmp( "-a", argv[i] ) == 0 )
 		{
-			list_all = 1;
+			list_all = true;
 		}
 	}
 	
@@ -21,35 +25,35 @@ int main( int argc, char **argv )
 		fprintf( stderr, "Could not initialize the HID API.\n" );
 		return 1;
 	}
-	if ( list_all != 0 )
-	{
-		devs = hid_enumerate( 0, 0 );
-	}
-	else
-	{
-		devs = hid_enumerate( 0x0c45, 0x7401 );
-	}
+	devs = hid_enumerate( 0, 0 );
 	if ( !devs )
 	{
-		printf( "No devices were found.\n" );
+		printf( "No HID devices were found.\n" );
 	}
 	for ( info = devs; info; info = info->next )
 	{
-		if (
-			list_all != 0 ||
-			(
-				info->vendor_id == 0x0c45 &&
-				info->product_id == 0x7401 &&
-				info->interface_number == 1
-			)
-		)
+		temper_type* type = get_temper_type( info );
+		if ( list_all || ( type != NULL && !type->ignored ) )
 		{
-			printf("Device %04hx:%04hx %d | %s | %ls %ls\n",
+			printf( "Device %04hx:%04hx %d | %s | %ls %ls\n",
 				info->vendor_id, info->product_id,
 				info->interface_number,
 				info->path,
 				info->manufacturer_string, info->product_string
 			);
+			if ( list_all && type != NULL )
+			{
+				if ( type->ignored )
+				{
+					printf(
+						"\tRecognized as ignored part of: %s\n", type->name
+					);
+				}
+				else
+				{
+					printf( "\tRecognized as: %s\n", type->name );
+				}
+			}
 		}
 	}
 	hid_free_enumeration( devs );
