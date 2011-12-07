@@ -16,11 +16,16 @@ This enabled me to fairly quickly make a much simpler program than the original
 that does basically the same thing, namely read the temperature off the sensor.
 
 Later, I changed some parts and added code to support more of the HID devices
-that work in a similar way. As yet I've only added support for the temperature
-part of the TEMPer2HumiV1.0 (0c45:7402), on the assumption that the USB IDs are
-the only things that need to be different (which seems to be right according to
-a comment in the same thread as [1], but has not yet been tested). However, the
-code is written to be ready for other variants that work slightly differently.
+that work in a similar way. As yet I've only added support for a few other
+devices, some of which are still experimental due to lack of testing.
+
+The temperature part of the TEMPer2HumiV1.0 (0c45:7402) device seems to work
+fine, according to comments I've seen; I've since added experimental support
+for the humidity part of it due to someone asking for it, and am hoping they
+will help me test it (and fix it if it doesn't work).
+
+There's also experimental support for the TEMPer and TEMPerHUM (1130:660c)
+devices, using known offsets but untested data-reading code.
 
 As yet, this is as far as I have gotten - there's currently just a pair of
 programs, one that enumerates the devices attached to the system, and one that
