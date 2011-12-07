@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "hidapi.h"
 #include "temper_type.h"
 
@@ -46,6 +47,7 @@ void print_temp( temper_type *type, char *dev_path )
 		}
 		else
 		{
+			// This calculation is based on the FM75 datasheet.
 			int temp = ( data[type->temperature_low_byte_offset] & 0xFF )
 				+ ( (signed char)data[type->temperature_high_byte_offset] << 8 )
 			;
@@ -53,15 +55,38 @@ void print_temp( temper_type *type, char *dev_path )
 			
 			if ( type->has_humidity )
 			{
+				// This calculation is based on the Sensirion SHT1x datasheet.
+				// Worth noting is that we're not using this chip's temperature
+				// calculation above, but it seems to be close enough anyway.
 				int rh = ( data[type->humidity_low_byte_offset] & 0xFF )
 					+ ( ( data[type->humidity_high_byte_offset] & 0xFF ) << 8 )
 				;
+				// This uses the high-resolution numbers; low-resolution is
+				// probably not really relevant for our uses.
 				float relhum = -2.0468 + 0.0367 * rh - 1.5955e-6 * rh * rh;
 				relhum = ( tempC - 25 ) * ( 0.01 + 0.00008 * rh ) + relhum;
+				// Clamp the numbers to a sensible range, as per the datasheet.
+				if ( relhum <= 0 ) relhum = 0;
+				if ( relhum > 99 ) relhum = 100;
+				
+				// As a convenience, calculate the dew point as well.
+				// Again, based on the Sensirion SHT1x datasheet, but with some
+				// extra reading on Wikipedia.
+				double Tn = 243.12;
+				double m = 17.62;
+				if ( tempC < 0 )
+				{
+					Tn = 272.62;
+					m = 22.46;
+				}
+				double gamma = log( relhum / 100 ) + m * tempC / ( Tn + tempC );
+				double dew_point = Tn * gamma / ( m - gamma );
 				
 				printf(
-					"%s: temperature %.2f°C, humidity %.2f%%\n",
-					dev_path, tempC, relhum
+					"%s: temperature %.2f°C"
+					", relative humidity %.1f%%"
+					", dew point %.1f°C\n",
+					dev_path, tempC, relhum, dew_point
 				);
 			}
 			else
