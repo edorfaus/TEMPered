@@ -22,7 +22,10 @@ temper_type known_temper_types[]={
 		.temp_report_length=8,
 		.temp_report={1,0x80,0x33,1,0,0,0,0},
 		.temperature_high_byte_offset=2,
-		.temperature_low_byte_offset=3
+		.temperature_low_byte_offset=3,
+		.has_humidity=true,
+		.humidity_high_byte_offset=0,
+		.humidity_low_byte_offset=1
 	},
 	{
 		.name="TEMPerV1.2",
@@ -71,7 +74,10 @@ temper_type known_temper_types[]={
 		.temp_report_length=8,
 		.temp_report={0x48,0,0,0,0,0,0,0},
 		.temperature_high_byte_offset=0,
-		.temperature_low_byte_offset=1
+		.temperature_low_byte_offset=1,
+		.has_humidity=true,
+		.humidity_high_byte_offset=2,
+		.humidity_low_byte_offset=3
 	},
 	{ .name=NULL } // List terminator
 };

@@ -51,7 +51,23 @@ void print_temp( temper_type *type, char *dev_path )
 			;
 			float tempC = temp * 125.0 / 32000.0;
 			
-			printf( "Temperature: %.2f C\n", tempC );
+			if ( type->has_humidity )
+			{
+				int rh = ( data[type->humidity_low_byte_offset] & 0xFF )
+					+ ( ( data[type->humidity_high_byte_offset] & 0xFF ) << 8 )
+				;
+				float relhum = -2.0468 + 0.0367 * rh - 1.5955e-6 * rh * rh;
+				relhum = ( tempC - 25 ) * ( 0.01 + 0.00008 * rh ) + relhum;
+				
+				printf(
+					"%s: temperature %.2f°C, humidity %.2f%%\n",
+					dev_path, tempC, relhum
+				);
+			}
+			else
+			{
+				printf( "%s: temperature %.2f°C\n", dev_path, tempC );
+			}
 		}
 	}
 	hid_close( dev );

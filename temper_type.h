@@ -67,6 +67,21 @@ typedef struct temper_type {
 	 */
 	int temperature_low_byte_offset;
 	
+	/** Whether or not this device has a humidity sensor.
+	 * Only valid if ignored is false.
+	 */
+	bool has_humidity;
+	
+	/** Offset in the response containing the high byte of the humidity.
+	 * Only valid if ignored is false and has_humidity is true.
+	 */
+	int humidity_high_byte_offset;
+	
+	/** Offset in the response containing the low byte of the humidity.
+	 * Only valid if ignored is false and has_humidity is true.
+	 */
+	int humidity_low_byte_offset;
+	
 } temper_type;
 
 /** This is the array of known types, terminated by an element with a NULL name.
