@@ -21,8 +21,8 @@ temper_type known_temper_types[]={
 		.interface_number=1,
 		.temp_report_length=8,
 		.temp_report={1,0x80,0x33,1,0,0,0,0},
-		.high_byte_offset=2,
-		.low_byte_offset=3
+		.temperature_high_byte_offset=2,
+		.temperature_low_byte_offset=3
 	},
 	{
 		.name="TEMPerV1.2",
@@ -39,8 +39,8 @@ temper_type known_temper_types[]={
 		.interface_number=1,
 		.temp_report_length=8,
 		.temp_report={1,0x80,0x33,1,0,0,0,0},
-		.high_byte_offset=2,
-		.low_byte_offset=3
+		.temperature_high_byte_offset=2,
+		.temperature_low_byte_offset=3
 	},
 	{
 		.name="TEMPer, TEMPerNTC or TEMPerHUM",
@@ -58,8 +58,8 @@ temper_type known_temper_types[]={
 		.interface_number=1,
 		.temp_report_length=8,
 		.temp_report={0x54,0,0,0,0,0,0,0},
-		.high_byte_offset=0,
-		.low_byte_offset=1
+		.temperature_high_byte_offset=0,
+		.temperature_low_byte_offset=1
 	},
 	{
 		.name="TEMPerHUM (experimental)",
@@ -70,8 +70,8 @@ temper_type known_temper_types[]={
 		.interface_number=1,
 		.temp_report_length=8,
 		.temp_report={0x48,0,0,0,0,0,0,0},
-		.high_byte_offset=0,
-		.low_byte_offset=1
+		.temperature_high_byte_offset=0,
+		.temperature_low_byte_offset=1
 	},
 	{ .name=NULL } // List terminator
 };

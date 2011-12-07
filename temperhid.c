@@ -38,15 +38,16 @@ void print_temp( temper_type *type, char *dev_path )
 			fprintf( stderr, "No data was read from the sensor (timeout).\n" );
 		}
 		else if (
-			size <= type->high_byte_offset || size <= type->low_byte_offset
+			size <= type->temperature_high_byte_offset ||
+			size <= type->temperature_low_byte_offset
 		)
 		{
 			fprintf( stderr, "Not enough data was read from the sensor.\n" );
 		}
 		else
 		{
-			int temp = ( data[type->low_byte_offset] & 0xFF )
-				+ ( (signed char)data[type->high_byte_offset] << 8 )
+			int temp = ( data[type->temperature_low_byte_offset] & 0xFF )
+				+ ( (signed char)data[type->temperature_high_byte_offset] << 8 )
 			;
 			float tempC = temp * 125.0 / 32000.0;
 			

@@ -60,12 +60,12 @@ typedef struct temper_type {
 	/** Offset in the response containing the high byte of the temperature.
 	 * Only valid if ignored is false.
 	 */
-	int high_byte_offset;
+	int temperature_high_byte_offset;
 	
 	/** Offset in the response containing the low byte of the temperature.
 	 * Only valid if ignored is false.
 	 */
-	int low_byte_offset;
+	int temperature_low_byte_offset;
 	
 } temper_type;
 
