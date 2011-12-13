@@ -51,9 +51,28 @@ void print_temp( temper_type *type, char *dev_path )
 			int temp = ( data[type->temperature_low_byte_offset] & 0xFF )
 				+ ( (signed char)data[type->temperature_high_byte_offset] << 8 )
 			;
+			// This is the same as dividing by 256; basically moving the
+			// decimal point into place. This formula is from the datasheet.
 			float tempC = temp * 125.0 / 32000.0;
 			
-			if ( type->has_humidity )
+			// If needed, check that we have enough data to do humidity.
+			bool has_humidity = type->has_humidity;
+			if (
+				has_humidity &&
+				(
+					size <= type->humidity_high_byte_offset ||
+					size <= type->humidity_low_byte_offset
+				)
+			) {
+				has_humidity = false;
+				fprintf(
+					stderr,
+					"%s: Not enough data was read from the sensor"
+					" to do humidity.\n",
+					dev_path
+				);
+			}
+			if ( has_humidity )
 			{
 				// This calculation is based on the Sensirion SHT1x datasheet.
 				// Worth noting is that we're not using this chip's temperature
