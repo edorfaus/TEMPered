@@ -7,7 +7,7 @@ HIDAPI_DIR=../hidapi.git
 HIDAPI_OBJ=linux/hid.o
 
 # This is the list of programs that can/will be built.
-PROGRAMS=temperhid enumerate
+PROGRAMS=temperhid enumerate dump-data
 
 all: $(PROGRAMS)
 

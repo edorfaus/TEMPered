@@ -27,11 +27,15 @@ will help me test it (and fix it if it doesn't work).
 There's also experimental support for the TEMPer and TEMPerHUM (1130:660c)
 devices, using known offsets but untested data-reading code.
 
-As yet, this is as far as I have gotten - there's currently just a pair of
-programs, one that enumerates the devices attached to the system, and one that
-reads the temperature off either all supported devices, or the specified ones.
 
-I have not yet implemented all the features of Cray's pcsensor program though,
+As yet, this is as far as I have gotten - which includes these programs:
+- enumerate: lists the devices attached to the system, -a includes unknown ones
+- temperhid: reads the temperature off either all found devices, or those given
+- dump-data: reads the data off the same devices as temperhid, and dumps it in
+    raw format, which can be useful for debugging and adding new device support
+
+
+I have not yet implemented all the features of Cray's pcsensor program,
 and may not get around to doing that for quite a while, as I don't need them.
 
 
