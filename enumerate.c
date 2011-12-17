@@ -35,12 +35,29 @@ int main( int argc, char **argv )
 		temper_type* type = get_temper_type( info );
 		if ( list_all || ( type != NULL && !type->ignored ) )
 		{
-			printf( "Device %04hx:%04hx %d | %s | %ls %ls\n",
+			printf(
+				"Device %04hx:%04hx if %d rel %4hx | %s | %ls %ls\n",
 				info->vendor_id, info->product_id,
-				info->interface_number,
+				info->interface_number, info->release_number,
 				info->path,
 				info->manufacturer_string, info->product_string
 			);
+			if ( list_all )
+			{
+				/* Usage and usage page is only valid on Windows/Mac :(
+				if ( info->usage_page != 0 || info->usage != 0 )
+				{
+					printf(
+						"\tUsage page %hd, usage %hd\n",
+						info->usage_page, info->usage
+					);
+				}
+				// */
+				if ( info->serial_number != NULL )
+				{
+					printf( "\tSerial number: %ls\n", info->serial_number );
+				}
+			}
 			if ( list_all && type != NULL )
 			{
 				if ( type->ignored )
