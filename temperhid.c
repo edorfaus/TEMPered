@@ -47,13 +47,12 @@ void print_temp( temper_type *type, char *dev_path )
 		}
 		else
 		{
-			// This calculation is based on the FM75 datasheet.
+			// This calculation is based on the FM75 datasheet, and converts
+			// from two separate data bytes to a single integer, which is
+			// needed for all currently supported temperature sensors.
 			int temp = ( data[type->temperature_low_byte_offset] & 0xFF )
 				+ ( (signed char)data[type->temperature_high_byte_offset] << 8 )
 			;
-			// This is the same as dividing by 256; basically moving the
-			// decimal point into place. This formula is from the datasheet.
-			float tempC = temp * 125.0 / 32000.0;
 			
 			// If needed, check that we have enough data to do humidity.
 			bool has_humidity = type->has_humidity;
@@ -74,14 +73,17 @@ void print_temp( temper_type *type, char *dev_path )
 			}
 			if ( has_humidity )
 			{
-				// This calculation is based on the Sensirion SHT1x datasheet.
-				// Worth noting is that we're not using this chip's temperature
-				// calculation above, but it seems to be close enough anyway.
+				// These formulas are based on the Sensirion SHT1x datasheet,
+				// and uses the high-resolution numbers; low-resolution is
+				// probably not really relevant for our uses.
+				
+				// Temperature, using d1 for VDD = 3.5V, as that matches best.
+				float tempC = -39.7 + 0.01 * temp;
+				
+				// Relative humidity.
 				int rh = ( data[type->humidity_low_byte_offset] & 0xFF )
 					+ ( ( data[type->humidity_high_byte_offset] & 0xFF ) << 8 )
 				;
-				// This uses the high-resolution numbers; low-resolution is
-				// probably not really relevant for our uses.
 				float relhum = -2.0468 + 0.0367 * rh - 1.5955e-6 * rh * rh;
 				relhum = ( tempC - 25 ) * ( 0.01 + 0.00008 * rh ) + relhum;
 				// Clamp the numbers to a sensible range, as per the datasheet.
@@ -110,6 +112,11 @@ void print_temp( temper_type *type, char *dev_path )
 			}
 			else
 			{
+				// This is the same as dividing by 256; basically moving the
+				// decimal point into place.
+				// This formula is from the FM75 datasheet.
+				float tempC = temp * 125.0 / 32000.0;
+				
 				printf( "%s: temperature %.2f°C\n", dev_path, tempC );
 			}
 		}

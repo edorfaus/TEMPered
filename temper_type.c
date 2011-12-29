@@ -7,14 +7,14 @@
 // This is an array of known TEMPer types.
 temper_type known_temper_types[]={
 	{
-		.name="TEMPer2HumiV1.0",
+		.name="TEMPer2HumiV1.x",
 		.ignored=true,
 		.vendor_id=0x0c45,
 		.product_id=0x7402,
 		.interface_number=0
 	},
 	{
-		.name="TEMPer2HumiV1.0",
+		.name="TEMPer2HumiV1.x",
 		.ignored=false,
 		.vendor_id=0x0c45,
 		.product_id=0x7402,
@@ -24,8 +24,8 @@ temper_type known_temper_types[]={
 		.temperature_high_byte_offset=2,
 		.temperature_low_byte_offset=3,
 		.has_humidity=true,
-		.humidity_high_byte_offset=0,
-		.humidity_low_byte_offset=1
+		.humidity_high_byte_offset=4,
+		.humidity_low_byte_offset=5
 	},
 	{
 		.name="TEMPerV1.2",
