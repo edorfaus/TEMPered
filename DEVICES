@@ -1,0 +1,47 @@
+This is a list of the currently known devices, providing some basic information
+on them and how well they work with this project's code, if at all.
+
+At the moment, the code only works with devices using the HID drivers, and will
+require some restructuring to work with devices acting like a serial port.
+Some of that restructuring is already planned, for other reasons, and the rest
+will likely happen sooner or later.
+
+0c45:7401	WORKS
+	HID: TEMPerV1.2
+	This device has one internal temperature sensor, which appears to be a
+	Fairchild FM75 or compatible sensor chip.
+	This was the first device owned by EdorFaus, and hence was the first one to
+	be supported, and the one having seen the most testing during development.
+
+0c45:7402	WORKS
+	HID: TEMPer2HumiV1.x
+	Both V1.0 and V1.1 have been seen; V1.1 was confirmed working at 2011-12-28
+	in issue #1 after commit b668b00eb16675eba53385edeff6b0a70b38a614.
+	This device has one internal temperature and humidity sensor, which appears
+	to be a Sensirion SHT1x or compatible sensor chip.
+	Read method is the same as TEMPerV1.2, but needs a different formula for
+	the temperature.
+
+1130:660c
+	HID
+	USB product strings are the same; device recognition can be done by reading
+	from the device (there's an identification byte in a separate data area).
+	
+	TEMPer	EXPERIMENTAL
+		I think this has one internal temperature sensor, as that's what the
+		original temper-1.0 code by relevak reads.
+		There's some experimental code in this project to read the temperature,
+		which might work, but has not yet been confirmed to work.
+		The offsets are known, but the code that reads the sensor data is new.
+	
+	TEMPerHUM	EXPERIMENTAL
+		I think this has one internal temperature and humidity sensor; not sure
+		whether or not that sensor works like TEMPer2HumiV1.x's sensor.
+		There's some experimental code in this project to read the temperature
+		and humidity, which might work, but has not yet been confirmed to work.
+		The offsets are known, but the code that reads the sensor data is new.
+	
+	TEMPerNTC	NOT YET
+		I think this has one temperature sensor that works differently from
+		most of the other temperature sensors; I haven't looked at it yet, but
+		do plan to add code for it eventually.

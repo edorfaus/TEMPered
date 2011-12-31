@@ -15,17 +15,10 @@ addition to being open source is also cross-platform, which is positive.
 This enabled me to fairly quickly make a much simpler program than the original
 that does basically the same thing, namely read the temperature off the sensor.
 
-Later, I changed some parts and added code to support more of the HID devices
-that work in a similar way. As yet I've only added support for a few other
-devices, some of which are still experimental due to lack of testing.
-
-The temperature part of the TEMPer2HumiV1.0 (0c45:7402) device seems to work
-fine, according to comments I've seen; I've since added experimental support
-for the humidity part of it due to someone asking for it, and am hoping they
-will help me test it (and fix it if it doesn't work).
-
-There's also experimental support for the TEMPer and TEMPerHUM (1130:660c)
-devices, using known offsets but untested data-reading code.
+Since then, I've been changing and adding to the code, to make the various
+device variants work as well as I can, and intend to continue doing that.
+See the DEVICES file for more information on the currently known devices and
+how well they work (if at all).
 
 
 As yet, this is as far as I have gotten - which includes these programs:
