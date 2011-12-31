@@ -45,3 +45,29 @@ will likely happen sooner or later.
 		I think this has one temperature sensor that works differently from
 		most of the other temperature sensors; I haven't looked at it yet, but
 		do plan to add code for it eventually.
+
+?:?	NOT YET
+	serial: TEMPer232
+	USB IDs unknown, apparently uses the ch341 kernel driver; some docs are
+	supposedly available, I haven't seen them (nor looked for them).
+	I've only seen it mentioned in relevak's thread, which also has mentions
+	of it being problematic.
+	Requires some restructuring for the code to work with serial devices.
+
+1a86:7523	NOT YET
+	serial: TEMPer16
+	Uses the ch341 kernel driver.
+	Has two channels (A/B) of up to 8 temperature sensors each (Tx aka T0-T7),
+	for a total of up to 16 temperature sensors. Product images suggests these
+	temperature sensors are the same type as that of TemperNTC. Uses wires with
+	standard 3.5mm audio connectors to connect the sensors, probably using the
+	1wire protocol; I'm guessing it contains two 1wire bus chips, and addresses
+	the sensors individually when reading.
+	Requires some restructuring for the code to work with serial devices, and
+	for the number of sensors only being known after device initialization.
+	Theoretically, the number of sensors can change at any time, as can which
+	ones are connected, but I'm not so sure we want to allow that in practice,
+	since it can be easily done by reopening the device. An alternative would
+	be to always say 16 sensors, and simply fail the reading of ones that
+	aren't currently connected - assuming that works in practice (it might).
+	That would move the management of this to the users of the library.
