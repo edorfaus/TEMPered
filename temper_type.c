@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <wchar.h>
 
 #include "temper_type.h"
 
@@ -57,7 +56,6 @@ temper_type known_temper_types[]={
 		.ignored=false,
 		.vendor_id=0x1130,
 		.product_id=0x660c,
-		.product_string=L"TEMPer",
 		.interface_number=1,
 		.temp_report_length=8,
 		.temp_report={0x54,0,0,0,0,0,0,0},
@@ -69,7 +67,6 @@ temper_type known_temper_types[]={
 		.ignored=false,
 		.vendor_id=0x1130,
 		.product_id=0x660c,
-		.product_string=L"TEMPerHUM",
 		.interface_number=1,
 		.temp_report_length=8,
 		.temp_report={0x48,0,0,0,0,0,0,0},
@@ -91,11 +88,7 @@ temper_type* get_temper_type( struct hid_device_info *info )
 		if (
 			type->vendor_id == info->vendor_id &&
 			type->product_id == info->product_id &&
-			type->interface_number == info->interface_number &&
-			(
-				type->product_string == NULL ||
-				wcscmp( type->product_string, info->product_string ) == 0
-			)
+			type->interface_number == info->interface_number
 		)
 		{
 			return type;

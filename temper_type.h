@@ -2,7 +2,6 @@
 #define TEMPER_TYPE_H
 
 #include <stdbool.h>
-#include <wchar.h>
 
 #include "hidapi.h"
 
@@ -35,13 +34,6 @@ typedef struct temper_type {
 	/** USB Device Product ID for this type.
 	 */
 	unsigned short product_id;
-	
-	/** USB Device Product string for this type.
-	 * This can be NULL if the IDs are enough to distinguish this device type
-	 * from other device types, and is generally only used when multiple
-	 * devices that need different code shares the same device IDs.
-	 */
-	wchar_t *product_string;
 	
 	/** USB Interface number for this type.
 	 */
