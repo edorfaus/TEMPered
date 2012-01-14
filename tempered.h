@@ -3,14 +3,10 @@
 
 #include <stdbool.h>
 
-struct tempered_device_info {
-	const char *path;
-	const struct temper_type *type;
-};
-
 struct tempered_device_list {
 	struct tempered_device_list *next;
-	struct tempered_device_info device;
+	const char *path;
+	const struct temper_type *type;
 };
 
 /** Get the error message for the last error that occurred. */

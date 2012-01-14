@@ -84,10 +84,10 @@ tempered_device_list* tempered_enumerate( void )
 			}
 			
 			next->next = NULL;
-			next->device.path = strdup( info->path );
-			next->device.type = type;
+			next->path = strdup( info->path );
+			next->type = type;
 			
-			if ( next->device.path == NULL )
+			if ( next->path == NULL )
 			{
 				tempered_free_device_list( list );
 				set_error( "Unable to allocate memory for path." );
@@ -116,7 +116,7 @@ void tempered_free_device_list( struct tempered_device_list *list )
 	while ( list != NULL )
 	{
 		struct tempered_device_list next = list->next;
-		free( list->device.path );
+		free( list->path );
 		free( list );
 		list = next;
 	}
