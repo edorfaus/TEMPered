@@ -12,7 +12,7 @@ PROGRAMS=temperhid enumerate dump-data
 all: $(PROGRAMS)
 
 CC=gcc
-OBJS=temper_type.o
+OBJS=temper_type.o tempered.o
 CFLAGS+=-I$(HIDAPI_DIR)/hidapi -Wall -g `pkg-config libusb-1.0 --cflags`
 HIDAPI_LIB=$(HIDAPI_DIR)/$(HIDAPI_OBJ)
 LIBS=`pkg-config libusb-1.0 libudev --libs` -lm
