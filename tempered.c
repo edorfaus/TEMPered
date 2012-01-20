@@ -6,6 +6,11 @@
 
 #include "tempered.h"
 
+struct tempered_device_ {
+	hid_device *hid_dev;
+	struct temper_type const *type;
+};
+
 /** Holds the message for the last error that occurred.
  * @see set_error()
  * @see tempered_get_error()
@@ -120,4 +125,37 @@ void tempered_free_device_list( struct tempered_device_list *list )
 		free( list );
 		list = next;
 	}
+}
+
+/** Open a given device from the list. */
+tempered_device* tempered_open( struct tempered_device_list *list )
+{
+	// TODO: move this into temper_type->open()
+	tempered_device *device = malloc( sizeof( tempered_device ) );
+	if ( device == NULL )
+	{
+		set_error( "Could not allocate memory for the device." );
+		return NULL;
+	}
+	device->type = list->type;
+	device->hid_dev = hid_open_path( list->path );
+	if ( !device->hid_dev )
+	{
+		set_error( "Could not open the HID device." );
+		free( device );
+		return NULL;
+	}
+	return device;
+}
+
+/** Close an open device. */
+void tempered_close( tempered_device *device )
+{
+	if ( device == NULL )
+	{
+		return;
+	}
+	// TODO: move this into temper_type->close()
+	hid_close( device->hid_dev );
+	free( device );
 }

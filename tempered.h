@@ -9,6 +9,9 @@ struct tempered_device_list {
 	const struct temper_type *type;
 };
 
+struct tempered_device_;
+typedef struct tempered_device_ tempered_device;
+
 /** Get the error message for the last error that occurred. */
 const char *tempered_error( void );
 
@@ -48,5 +51,24 @@ tempered_device_list* tempered_enumerate( void );
  * @param list The device list to be freed. Can be NULL to not free anything.
  */
 void tempered_free_device_list( struct tempered_device_list *list );
+
+/** Open a given device from the device list.
+ *
+ * The returned handle should be closed with tempered_close() when you are done
+ * using the device.
+ * @param list The device list entry that should be opened.
+ * @return The opened device, or NULL on error.
+ * @see tempered_close()
+ * @see tempered_enumerate()
+ */
+tempered_device* tempered_open( struct tempered_device_list *list );
+
+/** Close an open device.
+ *
+ * Once a device handle has been closed, it should no longer be used.
+ * @param device The device handle to close.
+ * @see tempered_open()
+ */
+void tempered_close( tempered_device *device );
 
 #endif
