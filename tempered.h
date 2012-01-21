@@ -71,4 +71,13 @@ tempered_device* tempered_open( struct tempered_device_list *list );
  */
 void tempered_close( tempered_device *device );
 
+/** Get the type name of the given device.
+ * @param device The device to get the type name of.
+ * @return The type name of the given device, or NULL on error.
+ *
+ * The returned type name must not be freed, might be statically allocated,
+ * and is only valid as long as the device handle is open.
+ */
+char const * tempered_get_type_name( tempered_device *device );
+
 #endif

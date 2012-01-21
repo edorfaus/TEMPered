@@ -159,3 +159,14 @@ void tempered_close( tempered_device *device )
 	hid_close( device->hid_dev );
 	free( device );
 }
+
+/** Get the type name of the given device. */
+char const * tempered_get_type_name( tempered_device *device )
+{
+	if ( device == NULL || device->type == NULL || device->type->name == NULL )
+	{
+		set_error( "Invalid device handle." );
+		return NULL;
+	}
+	return device->type->name;
+}
