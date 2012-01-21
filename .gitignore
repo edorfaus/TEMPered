@@ -1,3 +1,5 @@
 enumerate
 temperhid
 temper_type.o
+dump-data
+tempered.o

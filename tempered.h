@@ -3,9 +3,11 @@
 
 #include <stdbool.h>
 
+#include "temper_type.h"
+
 struct tempered_device_list {
 	struct tempered_device_list *next;
-	const char *path;
+	char *path;
 	const struct temper_type *type;
 };
 
@@ -41,7 +43,7 @@ bool tempered_exit( void );
  * error. This list should be freed with tempered_free_device_list when you
  * are done with it.
  */
-tempered_device_list* tempered_enumerate( void );
+struct tempered_device_list* tempered_enumerate( void );
 
 /** Free the memory used by the given device list.
  *

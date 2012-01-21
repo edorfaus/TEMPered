@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "hidapi.h"
 
@@ -56,9 +57,9 @@ bool tempered_exit( void )
 }
 
 /** Enumerate the TEMPer devices. */
-tempered_device_list* tempered_enumerate( void )
+struct tempered_device_list* tempered_enumerate( void )
 {
-	tempered_device_list *list = NULL, *current = NULL;
+	struct tempered_device_list *list = NULL, *current = NULL;
 	struct hid_device_info *devs, *info;
 	devs = hid_enumerate( 0, 0 );
 	if ( devs == NULL )
@@ -120,7 +121,7 @@ void tempered_free_device_list( struct tempered_device_list *list )
 {
 	while ( list != NULL )
 	{
-		struct tempered_device_list next = list->next;
+		struct tempered_device_list *next = list->next;
 		free( list->path );
 		free( list );
 		list = next;
