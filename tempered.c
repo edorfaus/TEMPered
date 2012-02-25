@@ -7,6 +7,8 @@
 
 #include "tempered.h"
 
+#include "temper_type.h"
+
 struct tempered_device_ {
 	hid_device *hid_dev;
 	struct temper_type const *type;
@@ -76,7 +78,11 @@ struct tempered_device_list* tempered_enumerate( char **error )
 			
 			next->next = NULL;
 			next->path = strdup( info->path );
-			next->type = type;
+			next->internal_data = type;
+			next->type_name = type->name;
+			next->vendor_id = info->vendor_id;
+			next->product_id = info->product_id;
+			next->interface_number = info->interface_number;
 			
 			if ( next->path == NULL )
 			{
@@ -123,7 +129,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 		set_error( "Could not allocate memory for the device." );
 		return NULL;
 	}
-	device->type = list->type;
+	device->type = (temper_type *)list->internal_data;
 	device->hid_dev = hid_open_path( list->path );
 	if ( !device->hid_dev )
 	{

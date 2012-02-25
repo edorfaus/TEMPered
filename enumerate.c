@@ -28,10 +28,10 @@ int main( int argc, char **argv )
 		{
 			printf(
 				"Found device: %04x:%04x %i | %s | %s\n",
-				dev->type->vendor_id, dev->type->product_id,
-				dev->type->interface_number,
+				dev->vendor_id, dev->product_id,
+				dev->interface_number,
 				dev->path,
-				dev->type->name
+				dev->type_name
 			);
 		}
 		

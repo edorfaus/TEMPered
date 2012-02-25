@@ -3,12 +3,36 @@
 
 #include <stdbool.h>
 
-#include "temper_type.h"
-
 struct tempered_device_list {
+	/** Pointer to the next device in the list, or NULL if this is the last
+	 * device in the list.
+	 */
 	struct tempered_device_list *next;
+	
+	/** Device path for this device.
+	 */
 	char *path;
-	const struct temper_type *type;
+	
+	/** Internal data pointer.
+	 * @internal This is set to the temper_type.
+	 */
+	void *internal_data;
+	
+	/** Name of the device type.
+	 */
+	char *type_name;
+	
+	/** USB Device Vendor ID for this device.
+	 */
+	unsigned short vendor_id;
+	
+	/** USB Device Product ID for this device.
+	 */
+	unsigned short product_id;
+	
+	/** USB Interface number for this device.
+	 */
+	int interface_number;
 };
 
 struct tempered_device_;
