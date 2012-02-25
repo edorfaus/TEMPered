@@ -2,23 +2,24 @@
 
 #include "tempered.h"
 
-void print_error( void )
+void print_error( char *error )
 {
-	fprintf( stderr, "%s\n", tempered_error() );
+	fprintf( stderr, "%s\n", error );
 }
 
 int main( int argc, char **argv )
 {
-	if ( !tempered_init() )
+	char *error = NULL;
+	if ( !tempered_init( &error ) )
 	{
-		print_error();
+		print_error( error );
 		return 1;
 	}
 	
-	struct tempered_device_list *list = tempered_enumerate();
+	struct tempered_device_list *list = tempered_enumerate( &error );
 	if ( list == NULL )
 	{
-		print_error();
+		print_error( error );
 	}
 	else
 	{
@@ -37,9 +38,9 @@ int main( int argc, char **argv )
 		tempered_free_device_list( list );
 	}
 	
-	if ( !tempered_exit() )
+	if ( !tempered_exit( &error ) )
 	{
-		print_error();
+		print_error( error );
 		return 1;
 	}
 	return 0;

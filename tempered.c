@@ -12,52 +12,37 @@ struct tempered_device_ {
 	struct temper_type const *type;
 };
 
-/** Holds the message for the last error that occurred.
- * @see set_error()
- * @see tempered_get_error()
+/** This define is used for convenience to set the error message only when the
+ * pointer to it is not NULL, and depends on the parameter being named "error".
  */
-static const char *tempered_last_error = NULL;
-
-/** Set that an error occurred, with a message.
- * Call with NULL to clear any previous error.
- */
-static void set_error( const char *message )
-{
-	tempered_last_error = message;
-}
-
-/** Get the error message for the last error that occurred. */
-const char *tempered_error( void )
-{
-	return tempered_last_error;
-}
+#define set_error( error_msg ) do { \
+		if ( error != NULL ) { *error = error_msg; } \
+	} while (false)
 
 /** Initialize the TEMPered library. */
-bool tempered_init( void )
+bool tempered_init( char **error )
 {
 	if ( hid_init() != 0 )
 	{
 		set_error( "Could not initialize the HID API." );
 		return false;
 	}
-	set_error( NULL );
 	return true;
 }
 
 /** Finalize the TEMPered library. */
-bool tempered_exit( void )
+bool tempered_exit( char **error )
 {
 	if ( hid_exit() != 0 )
 	{
 		set_error( "Error shutting down the HID API." );
 		return false;
 	}
-	set_error( NULL );
 	return true;
 }
 
 /** Enumerate the TEMPer devices. */
-struct tempered_device_list* tempered_enumerate( void )
+struct tempered_device_list* tempered_enumerate( char **error )
 {
 	struct tempered_device_list *list = NULL, *current = NULL;
 	struct hid_device_info *devs, *info;
@@ -129,7 +114,7 @@ void tempered_free_device_list( struct tempered_device_list *list )
 }
 
 /** Open a given device from the list. */
-tempered_device* tempered_open( struct tempered_device_list *list )
+tempered_device* tempered_open( struct tempered_device_list *list, char **error )
 {
 	// TODO: move this into temper_type->open()
 	tempered_device *device = malloc( sizeof( tempered_device ) );
@@ -162,7 +147,7 @@ void tempered_close( tempered_device *device )
 }
 
 /** Get the type name of the given device. */
-char const * tempered_get_type_name( tempered_device *device )
+char const * tempered_get_type_name( tempered_device *device, char **error )
 {
 	if ( device == NULL || device->type == NULL || device->type->name == NULL )
 	{
