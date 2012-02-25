@@ -102,15 +102,39 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
  */
 void tempered_close( tempered_device *device );
 
+/** Get the last error message for the given device.
+ * @param device The device for which to get the last error message.
+ * @return The last error message for the given device, or NULL if no error has
+ * occurred on that device.
+ *
+ * The returned string must not be freed, might be statically allocated,
+ * and is only valid as long as the device handle is open.
+ */
+char* tempered_error( tempered_device *device );
+
+/** Get the temperature from the given device.
+ * @param device The device to get the temperature from.
+ * @param tempC A pointer to a float where the temperature will be stored.
+ * @return Whether or not the temperature was successfully retrieved.
+ */
+bool tempered_get_temperature( tempered_device *device, float *tempC );
+
+/** Get the device path of the given device.
+ * @param device The device to get the type name of.
+ * @return The device path of the given device.
+ *
+ * The returned string must not be freed, might be statically allocated,
+ * and is only valid as long as the device handle is open.
+ */
+char const * tempered_get_device_path( tempered_device *device );
+
 /** Get the type name of the given device.
  * @param device The device to get the type name of.
- * @param error If an error occurs and this is not NULL, it will be set to the
- * error message.
  * @return The type name of the given device, or NULL on error.
  *
  * The returned type name must not be freed, might be statically allocated,
  * and is only valid as long as the device handle is open.
  */
-char const * tempered_get_type_name( tempered_device *device, char **error );
+char const * tempered_get_type_name( tempered_device *device );
 
 #endif
