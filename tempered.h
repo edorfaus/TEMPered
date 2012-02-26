@@ -3,6 +3,17 @@
 
 #include <stdbool.h>
 
+
+/** No such sensor, or it doesn't support any of the types we know. */
+#define TEMPERED_SENSOR_TYPE_NONE        (0     )
+
+/** The sensor supports reading the temperature. */
+#define TEMPERED_SENSOR_TYPE_TEMPERATURE (1 << 0)
+
+/** The sensor supports reading the relative humidity. */
+#define TEMPERED_SENSOR_TYPE_HUMIDITY    (1 << 1)
+
+
 struct tempered_device_list {
 	/** Pointer to the next device in the list, or NULL if this is the last
 	 * device in the list.
@@ -112,6 +123,21 @@ void tempered_close( tempered_device *device );
  */
 char* tempered_error( tempered_device *device );
 
+/** Get the number of sensors supported by the given device.
+ * @param device The device to get the sensor count of.
+ * @return The number of sensors this device currently has.
+ */
+int tempered_get_sensor_count( tempered_device *device );
+
+/** Get the sensor type of the given sensor.
+ * @param device The device the sensor belongs to.
+ * @param sensor The ID of the sensor to get the type of.
+ * The ID is a number ( 0 <= ID < sensor_count ) that identifies the sensor.
+ * @return A bitmask that identifies the type of sensor this is. This is made
+ * up of the TEMPERED_SENSOR_TYPE_* constants.
+ */
+int tempered_get_sensor_type( tempered_device *device, int sensor );
+
 /** Read the sensors of the given device.
  *
  * This should be called when you want to update the sensor values
@@ -125,19 +151,25 @@ bool tempered_read_sensors( tempered_device *device );
  *
  * Note that to get up-to-date values you must first call tempered_read_sensors.
  * @param device The device to get the temperature from.
+ * @param sensor The ID of the sensor to get the temperature of.
  * @param tempC A pointer to a float where the temperature will be stored.
  * @return Whether or not the temperature was successfully retrieved.
  */
-bool tempered_get_temperature( tempered_device *device, float *tempC );
+bool tempered_get_temperature(
+	tempered_device *device, int sensor, float *tempC
+);
 
 /** Get the relative humidity from the given device.
  *
  * Note that to get up-to-date values you must first call tempered_read_sensors.
  * @param device The device to get the humidity from.
+ * @param sensor The ID of the sensor to get the relative humidity of.
  * @param rel_hum A pointer to a float where the humidity will be stored.
  * @return Whether or not the humidity was successfully retrieved.
  */
-bool tempered_get_humidity( tempered_device *device, float *rel_hum );
+bool tempered_get_humidity(
+	tempered_device *device, int sensor, float *rel_hum
+);
 
 /** Get the device path of the given device.
  * @param device The device to get the type name of.

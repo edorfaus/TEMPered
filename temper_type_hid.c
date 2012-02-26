@@ -112,8 +112,9 @@ bool temper_type_hid_read_sensors( tempered_device* device )
 	return true;
 }
 
-bool temper_type_hid_get_temperature( tempered_device* device, float* tempC )
-{
+bool temper_type_hid_get_temperature(
+	tempered_device* device, int sensor, float* tempC
+) {
 	struct temper_type_hid_data *info =
 		(struct temper_type_hid_data*) device->type->data;
 	
@@ -162,8 +163,9 @@ bool temper_type_hid_get_temperature( tempered_device* device, float* tempC )
 	return true;
 }
 
-bool temper_type_hid_get_humidity( tempered_device* device, float* rel_hum )
-{
+bool temper_type_hid_get_humidity(
+	tempered_device* device, int sensor, float* rel_hum
+) {
 	struct temper_type_hid_data *info =
 		(struct temper_type_hid_data*) device->type->data;
 	
@@ -176,7 +178,7 @@ bool temper_type_hid_get_humidity( tempered_device* device, float* rel_hum )
 	}
 	
 	float tempC;
-	if ( !temper_type_hid_get_temperature( device, &tempC ) )
+	if ( !temper_type_hid_get_temperature( device, sensor, &tempC ) )
 	{
 		return false;
 	}

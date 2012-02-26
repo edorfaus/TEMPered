@@ -214,6 +214,47 @@ char const * tempered_get_type_name( tempered_device *device )
 	return device->type->name;
 }
 
+/** Get the number of sensors supported by the given device. */
+int tempered_get_sensor_count( tempered_device *device )
+{
+	if ( device == NULL )
+	{
+		return 0;
+	}
+	/*
+	if ( device->type->get_sensor_count != NULL )
+	{
+		return device->type->get_sensor_count( device );
+	}
+	*/
+	return 1;
+}
+
+/** Get the sensor type of the given sensor. */
+int tempered_get_sensor_type( tempered_device *device, int sensor )
+{
+	if ( device == NULL )
+	{
+		return TEMPERED_SENSOR_TYPE_NONE;
+	}
+	if ( sensor < 0 || sensor >= tempered_get_sensor_count( device ) )
+	{
+		tempered_set_error( device, strdup( "Sensor ID is out of range." ) );
+		return TEMPERED_SENSOR_TYPE_NONE;
+	}
+	/*
+	if ( device->type->get_sensor_type != NULL )
+	{
+		return device->type->get_sensor_type( device, sensor );
+	}
+	*/
+	if ( device->type->get_humidity != NULL )
+	{
+		return TEMPERED_SENSOR_TYPE_TEMPERATURE | TEMPERED_SENSOR_TYPE_HUMIDITY;
+	}
+	return TEMPERED_SENSOR_TYPE_TEMPERATURE;
+}
+
 /** Read the sensors of the given device. */
 bool tempered_read_sensors( tempered_device *device )
 {
@@ -232,8 +273,9 @@ bool tempered_read_sensors( tempered_device *device )
 }
 
 /** Get the temperature from the given device. */
-bool tempered_get_temperature( tempered_device *device, float *tempC )
-{
+bool tempered_get_temperature(
+	tempered_device *device, int sensor, float *tempC
+) {
 	if ( device == NULL )
 	{
 		return false;
@@ -245,6 +287,11 @@ bool tempered_get_temperature( tempered_device *device, float *tempC )
 		);
 		return false;
 	}
+	if ( sensor < 0 || sensor >= tempered_get_sensor_count( device ) )
+	{
+		tempered_set_error( device, strdup( "Sensor ID is out of range." ) );
+		return false;
+	}
 	if ( device->type->get_temperature == NULL )
 	{
 		tempered_set_error(
@@ -252,12 +299,13 @@ bool tempered_get_temperature( tempered_device *device, float *tempC )
 		);
 		return false;
 	}
-	return device->type->get_temperature( device, tempC );
+	return device->type->get_temperature( device, sensor, tempC );
 }
 
 /** Get the relative humidity from the given device. */
-bool tempered_get_humidity( tempered_device *device, float *rel_hum )
-{
+bool tempered_get_humidity(
+	tempered_device *device, int sensor, float *rel_hum
+) {
 	if ( device == NULL )
 	{
 		return false;
@@ -269,6 +317,11 @@ bool tempered_get_humidity( tempered_device *device, float *rel_hum )
 		);
 		return false;
 	}
+	if ( sensor < 0 || sensor >= tempered_get_sensor_count( device ) )
+	{
+		tempered_set_error( device, strdup( "Sensor ID is out of range." ) );
+		return false;
+	}
 	if ( device->type->get_humidity == NULL )
 	{
 		tempered_set_error(
@@ -276,5 +329,5 @@ bool tempered_get_humidity( tempered_device *device, float *rel_hum )
 		);
 		return false;
 	}
-	return device->type->get_humidity( device, rel_hum );
+	return device->type->get_humidity( device, sensor, rel_hum );
 }
