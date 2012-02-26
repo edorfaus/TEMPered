@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-#include "hidapi.h"
-
 #include "tempered.h"
 
 /** This struct represents a type of recognized device, containing some useful
@@ -67,12 +65,16 @@ typedef struct temper_type {
  */
 extern temper_type known_temper_types[];
 
-/** Get the temper_type struct that matches the given hid_device_info struct.
- * @param hid_device_info* info The HID device info to get the type for.
- * @return temper_type*|NULL The matching type, or NULL if none was found.
+/** Find the temper_type struct that matches the given USB device information.
+ * @param vendor_id The USB vendor ID to find a temper_type for.
+ * @param product_id The USB product ID to find a temper_type for.
+ * @param interface_number The USB interface number to find a temper_type for.
+ * @return The matching type, or NULL if none was found.
  * Note that the returned type may have the ignored field set to true.
  */
-temper_type* get_temper_type( struct hid_device_info *info );
+temper_type* temper_type_find(
+	unsigned short vendor_id, unsigned short product_id, int interface_number
+);
 
 /** Initialize the TEMPer types. */
 bool temper_type_init( char **error );

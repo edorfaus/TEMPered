@@ -66,7 +66,9 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 	}
 	for ( info = devs; info; info = info->next )
 	{
-		temper_type* type = get_temper_type( info );
+		temper_type* type = temper_type_find(
+			info->vendor_id, info->product_id, info->interface_number
+		);
 		if ( type != NULL && !type->ignored )
 		{
 			printf(

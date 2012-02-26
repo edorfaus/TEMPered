@@ -76,7 +76,9 @@ void dump_data_one( struct hid_device_info *devs, char *dev_path )
 	{
 		if ( strcmp( info->path, dev_path ) == 0 )
 		{
-			temper_type *type = get_temper_type( info );
+			temper_type *type = temper_type_find(
+				info->vendor_id, info->product_id, info->interface_number
+			);
 			if ( type == NULL )
 			{
 				fprintf( stderr, "Device type not recognized: %s\n", dev_path );
@@ -104,7 +106,9 @@ void dump_data_all( struct hid_device_info *devs )
 	struct hid_device_info *info;
 	for ( info = devs; info; info = info->next )
 	{
-		temper_type *type = get_temper_type( info );
+		temper_type *type = temper_type_find(
+			info->vendor_id, info->product_id, info->interface_number
+		);
 		if ( type != NULL && !type->ignored )
 		{
 			dump_data( type, info );

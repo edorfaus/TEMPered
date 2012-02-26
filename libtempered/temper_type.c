@@ -107,18 +107,18 @@ temper_type known_temper_types[]={
 	{ .name=NULL } // List terminator
 };
 
-// Get the temper_type that matches the given hid_device_info
-temper_type* get_temper_type( struct hid_device_info *info )
-{
+// Get the temper_type that matches the given USB device information
+temper_type* temper_type_find(
+	unsigned short vendor_id, unsigned short product_id, int interface_number
+) {
 	temper_type *type;
 	for ( type = known_temper_types; type->name != NULL; type++ )
 	{
 		if (
-			type->vendor_id == info->vendor_id &&
-			type->product_id == info->product_id &&
-			type->interface_number == info->interface_number
-		)
-		{
+			type->vendor_id == vendor_id &&
+			type->product_id == product_id &&
+			type->interface_number == interface_number
+		) {
 			return type;
 		}
 	}
