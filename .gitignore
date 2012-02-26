@@ -2,7 +2,7 @@
 /libtempered/temper_type.o
 /libtempered/temper_type_hid.o
 /utils/enumerate
-/utils/temperhid
+/utils/tempered
 /utils/dump-data
 /libtempered.a
 /build
