@@ -5,6 +5,8 @@
 
 #include "hidapi.h"
 
+#include "tempered.h"
+
 /** The maximum length of the temperature report data.
  */
 #define TEMPER_TYPE_TEMP_REPORT_MAX_LENGTH 8
@@ -38,6 +40,18 @@ typedef struct temper_type {
 	/** USB Interface number for this type.
 	 */
 	int interface_number;
+	
+	/** The method to use to open a device of this type.
+	 */
+	bool (*open)( tempered_device* );
+	
+	/** The method to use to close a device of this type.
+	 */
+	void (*close)( tempered_device* );
+	
+	/** The method to use to get the temperature from a device of this type.
+	 */
+	bool (*get_temperature)( tempered_device*, float* );
 	
 	/** Report to send to the device to read the temperature.
 	 * Only valid if ignored is false.

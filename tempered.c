@@ -6,24 +6,9 @@
 #include "hidapi.h"
 
 #include "tempered.h"
+#include "tempered-internal.h"
 
 #include "temper_type.h"
-
-struct tempered_device_ {
-	/** The type of temper this device is. */
-	struct temper_type const *type;
-	
-	/** The path for this device. */
-	char *path;
-	
-	/** The last error that occurred with this device. */
-	char *error;
-	
-	/** HID device pointer for this device.
-	 * TODO: move this into type-specific data.
-	 */
-	hid_device *hid_dev;
-};
 
 /** This define is used for convenience to set the error message only when the
  * pointer to it is not NULL, and depends on the parameter being named "error".
@@ -33,8 +18,12 @@ struct tempered_device_ {
 	} while (false)
 
 /** Set the last error message on the given device. */
-static void set_device_error( tempered_device *device, char *error )
+void tempered_set_error( tempered_device *device, char *error )
 {
+	if ( device == NULL )
+	{
+		return;
+	}
 	if ( device->error != NULL )
 	{
 		free( device->error );
@@ -144,13 +133,24 @@ void tempered_free_device_list( struct tempered_device_list *list )
 /** Open a given device from the list. */
 tempered_device* tempered_open( struct tempered_device_list *list, char **error )
 {
+	if ( list == NULL || list->internal_data == NULL )
+	{
+		set_error( "Invalid device given." );
+		return NULL;
+	}
+	temper_type * type = (temper_type *)list->internal_data;
+	if ( type->open == NULL )
+	{
+		set_error( "Device type has no open method." );
+		return NULL;
+	}
 	tempered_device *device = malloc( sizeof( tempered_device ) );
 	if ( device == NULL )
 	{
 		set_error( "Could not allocate memory for the device." );
 		return NULL;
 	}
-	device->type = (temper_type *)list->internal_data;
+	device->type = type;
 	device->error = NULL;
 	device->path = strdup( list->path );
 	if ( device->path == NULL )
@@ -159,11 +159,16 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 		free( device );
 		return NULL;
 	}
-	// TODO: move this into temper_type->open()
-	device->hid_dev = hid_open_path( list->path );
-	if ( !device->hid_dev )
+	if ( !device->type->open( device ) )
 	{
-		set_error( "Could not open the HID device." );
+		if ( device->error != NULL )
+		{
+			set_error( device->error );
+		}
+		else
+		{
+			set_error( "Type-specific device open failed with no error." );
+		}
 		free( device->path );
 		free( device );
 		return NULL;
@@ -178,9 +183,10 @@ void tempered_close( tempered_device *device )
 	{
 		return;
 	}
-	// TODO: move this into temper_type->close()
-	hid_close( device->hid_dev );
-	// ... but keep the rest here.
+	if ( device->type->close != NULL )
+	{
+		device->type->close( device );
+	}
 	if ( device->error != NULL )
 	{
 		free( device->error );
@@ -215,78 +221,17 @@ bool tempered_get_temperature( tempered_device *device, float *tempC )
 	}
 	if ( tempC == NULL )
 	{
-		set_device_error( device, "The tempC parameter cannot be NULL." );
+		tempered_set_error(
+			device, strdup( "The tempC parameter cannot be NULL." )
+		);
 		return false;
 	}
-	
-	// TODO: Move this into temper_type->read_temp()
-	
-	struct temper_type const *type = device->type;
-	hid_device *dev = device->hid_dev;
-	unsigned char data[64];
-	int size;
-	
-	size = hid_write( dev, type->temp_report, type->temp_report_length );
-	if ( size <= 0 )
+	if ( device->type->get_temperature == NULL )
 	{
-		size = snprintf(
-			NULL, 0, "HID write failed: %ls",
-			hid_error( dev )
-		);
-		// TODO: check that size >= 0
-		size++;
-		char *error = malloc( size );
-		size = snprintf(
-			error, size, "HID write failed: %ls",
-			hid_error( dev )
-		);
-		set_device_error( device, error );
-		return false;
-	}
-	size = hid_read_timeout( dev, data, sizeof(data), 1000 );
-	if ( size < 0 )
-	{
-		size = snprintf(
-			NULL, 0, "Read of data from the sensor failed: %ls",
-			hid_error( dev )
-		);
-		// TODO: check that size >= 0
-		size++;
-		char *error = malloc( size );
-		size = snprintf(
-			error, size, "Read of data from the sensor failed: %ls",
-			hid_error( dev )
-		);
-		set_device_error( device, error );
-		return false;
-	}
-	if ( size == 0 )
-	{
-		set_device_error(
-			device, "No data was read from the sensor (timeout)."
+		tempered_set_error(
+			device, strdup( "This device type cannot read the temperature." )
 		);
 		return false;
 	}
-	if (
-		size <= type->temperature_high_byte_offset ||
-		size <= type->temperature_low_byte_offset
-	)
-	{
-		set_device_error( device, "Not enough data was read from the sensor." );
-		return false;
-	}
-	
-	// This calculation is based on the FM75 datasheet, and converts
-	// from two separate data bytes to a single integer, which is
-	// needed for all currently supported temperature sensors.
-	int temp = ( data[type->temperature_low_byte_offset] & 0xFF )
-		+ ( (signed char)data[type->temperature_high_byte_offset] << 8 )
-	;
-	
-	// This is the same as dividing by 256; basically moving the
-	// decimal point into place.
-	// This formula is from the FM75 datasheet.
-	*tempC = temp * 125.0 / 32000.0;
-	
-	return true;
+	return device->type->get_temperature( device, tempC );
 }

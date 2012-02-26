@@ -3,6 +3,8 @@
 
 #include "temper_type.h"
 
+#include "temper_type_hid.h"
+
 // This is an array of known TEMPer types.
 temper_type known_temper_types[]={
 	{
@@ -43,6 +45,9 @@ temper_type known_temper_types[]={
 		.temp_report={1,0x80,0x33,1,0,0,0,0},
 		.temperature_high_byte_offset=2,
 		.temperature_low_byte_offset=3
+		.open = temper_type_hid_open,
+		.close = temper_type_hid_close,
+		.get_temperature = temper_type_hid_get_temperature,
 	},
 	{
 		.name="TEMPer, TEMPerNTC or TEMPerHUM",
@@ -96,4 +101,3 @@ temper_type* get_temper_type( struct hid_device_info *info )
 	}
 	return NULL;
 }
-

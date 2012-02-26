@@ -3,3 +3,4 @@ temperhid
 temper_type.o
 dump-data
 tempered.o
+temper_type_hid.o
