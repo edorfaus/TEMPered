@@ -6,28 +6,35 @@ HIDAPI_DIR=../hidapi.git
 # depending on which variant you want to use.
 HIDAPI_OBJ=linux/hid.o
 
-# This is the list of programs that can/will be built.
-PROGRAMS=temperhid enumerate dump-data
-
-all: $(PROGRAMS)
-
 CC=gcc
-OBJS=temper_type_hid.o temper_type.o tempered.o
 CFLAGS+=-I$(HIDAPI_DIR)/hidapi -Wall -g `pkg-config libusb-1.0 --cflags`
 HIDAPI_LIB=$(HIDAPI_DIR)/$(HIDAPI_OBJ)
 LIBS=`pkg-config libusb-1.0 libudev --libs` -lm
 
+LIB_OBJECTS=$(patsubst libtempered/%.c,build/%.o,$(wildcard libtempered/*.c))
+
+PROGRAMS=$(patsubst %.c,%,$(wildcard utils/*.c))
+
+all: $(PROGRAMS)
 
 $(HIDAPI_LIB):
 	$(error You must build HIDAPI before building this)
 
-$(PROGRAMS): %: %.c $(OBJS) $(HIDAPI_LIB)
-	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
+build/.directory:
+	mkdir -p build
+	@touch build/.directory
 
-$(OBJS): %.o: %.c
+build/%.o: libtempered/%.c build/.directory
 	$(CC) $(CFLAGS) -c $< -o $@
 
-clean:
-	rm -f $(OBJS) $(PROGRAMS)
+libtempered.a: $(LIB_OBJECTS)
+	ar rc $@ $^
+	ranlib $@
 
-.PHONY: clean
+$(PROGRAMS): %: %.c libtempered.a $(HIDAPI_LIB)
+	$(CC) -Ilibtempered $(CFLAGS) $^ $(LIBS) -o $@
+
+clean:
+	rm -rf build libtempered.a $(PROGRAMS)
+
+.PHONY: all clean

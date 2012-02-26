@@ -1,6 +1,8 @@
-enumerate
-temperhid
-temper_type.o
-dump-data
-tempered.o
-temper_type_hid.o
+/libtempered/core.o
+/libtempered/temper_type.o
+/libtempered/temper_type_hid.o
+/utils/enumerate
+/utils/temperhid
+/utils/dump-data
+/libtempered.a
+/build
