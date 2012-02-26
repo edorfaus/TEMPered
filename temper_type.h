@@ -49,9 +49,17 @@ typedef struct temper_type {
 	 */
 	void (*close)( tempered_device* );
 	
+	/** The method to use to read the sensors on a device of this type.
+	 */
+	bool (*read_sensors)( tempered_device* );
+	
 	/** The method to use to get the temperature from a device of this type.
 	 */
 	bool (*get_temperature)( tempered_device*, float* );
+	
+	/** The method to use to get the relative humidity from this type of device.
+	 */
+	bool (*get_humidity)( tempered_device*, float* );
 	
 } temper_type;
 

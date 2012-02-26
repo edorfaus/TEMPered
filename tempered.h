@@ -112,12 +112,32 @@ void tempered_close( tempered_device *device );
  */
 char* tempered_error( tempered_device *device );
 
+/** Read the sensors of the given device.
+ *
+ * This should be called when you want to update the sensor values
+ * (temperature, humidity) that is returned by the other methods.
+ * @param device The device to read the sensors of.
+ * @return Whether or not the sensors were successfully read.
+ */
+bool tempered_read_sensors( tempered_device *device );
+
 /** Get the temperature from the given device.
+ *
+ * Note that to get up-to-date values you must first call tempered_read_sensors.
  * @param device The device to get the temperature from.
  * @param tempC A pointer to a float where the temperature will be stored.
  * @return Whether or not the temperature was successfully retrieved.
  */
 bool tempered_get_temperature( tempered_device *device, float *tempC );
+
+/** Get the relative humidity from the given device.
+ *
+ * Note that to get up-to-date values you must first call tempered_read_sensors.
+ * @param device The device to get the humidity from.
+ * @param rel_hum A pointer to a float where the humidity will be stored.
+ * @return Whether or not the humidity was successfully retrieved.
+ */
+bool tempered_get_humidity( tempered_device *device, float *rel_hum );
 
 /** Get the device path of the given device.
  * @param device The device to get the type name of.

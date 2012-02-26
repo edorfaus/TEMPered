@@ -36,7 +36,13 @@ bool temper_type_hid_open( tempered_device* device );
 /** Method for closing HID devices. */
 void temper_type_hid_close( tempered_device* device );
 
+/** Method for reading the sensors on a HID device. */
+bool temper_type_hid_read_sensors( tempered_device* device );
+
 /** Method for getting the temperature from HID devices. */
 bool temper_type_hid_get_temperature( tempered_device* device, float* tempC );
+
+/** Method for getting the relative humidity from HID devices. */
+bool temper_type_hid_get_humidity( tempered_device* device, float* rel_hum );
 
 #endif

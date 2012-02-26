@@ -214,6 +214,24 @@ char const * tempered_get_type_name( tempered_device *device )
 	return device->type->name;
 }
 
+/** Read the sensors of the given device. */
+bool tempered_read_sensors( tempered_device *device )
+{
+	if ( device == NULL )
+	{
+		return false;
+	}
+	if ( device->type->read_sensors == NULL )
+	{
+		tempered_set_error(
+			device, strdup( "This device type cannot read its sensors." )
+		);
+		return false;
+	}
+	return device->type->read_sensors( device );
+}
+
+/** Get the temperature from the given device. */
 bool tempered_get_temperature( tempered_device *device, float *tempC )
 {
 	if ( device == NULL )
@@ -235,4 +253,28 @@ bool tempered_get_temperature( tempered_device *device, float *tempC )
 		return false;
 	}
 	return device->type->get_temperature( device, tempC );
+}
+
+/** Get the relative humidity from the given device. */
+bool tempered_get_humidity( tempered_device *device, float *rel_hum )
+{
+	if ( device == NULL )
+	{
+		return false;
+	}
+	if ( rel_hum == NULL )
+	{
+		tempered_set_error(
+			device, strdup( "The rel_hum parameter cannot be NULL." )
+		);
+		return false;
+	}
+	if ( device->type->get_humidity == NULL )
+	{
+		tempered_set_error(
+			device, strdup( "This device type cannot read the humidity." )
+		);
+		return false;
+	}
+	return device->type->get_humidity( device, rel_hum );
 }
