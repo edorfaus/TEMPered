@@ -2,6 +2,7 @@
 #include <string.h>
 #include "hidapi.h"
 #include "temper_type.h"
+#include "temper_type_hid.h"
 
 #define DATA_MAX_LENGTH 256
 
@@ -11,9 +12,10 @@ void dump_data( temper_type *type, struct hid_device_info *info )
 	unsigned char data[DATA_MAX_LENGTH];
 	int size;
 	
-	printf( "Trying device: %04hx:%04hx %d | %s | %ls %ls\n",
+	printf( "Trying device: %04hx:%04hx %d | %s | %s | %ls %ls\n",
 		info->vendor_id, info->product_id,
 		info->interface_number,
+		info->path,
 		type->name,
 		info->manufacturer_string, info->product_string
 	);
@@ -23,7 +25,9 @@ void dump_data( temper_type *type, struct hid_device_info *info )
 		fprintf( stderr, "Could not open device: %s\n", info->path );
 		return;
 	}
-	size = hid_write( dev, type->temp_report, type->temp_report_length );
+	struct temper_type_hid_data *hid_data =
+		(struct temper_type_hid_data *) type->data;
+	size = hid_write( dev, hid_data->report_data, hid_data->report_length );
 	if ( size <= 0 )
 	{
 		fprintf( stderr, "Write failed: %ls\n", hid_error( dev ) );
