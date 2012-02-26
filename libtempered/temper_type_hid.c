@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <hidapi.h>
 
 #include "temper_type_hid.h"
 
@@ -20,6 +21,108 @@ struct temper_type_hid_device_data
 	/** The data that has been read from the device. */
 	unsigned char data[64];
 };
+
+/** Initialize the HID TEMPer types. */
+bool temper_type_hid_init( char **error )
+{
+	if ( hid_init() != 0 )
+	{
+		if ( error != NULL )
+		{
+			*error = "Could not initialize the HID API.";
+		}
+		return false;
+	}
+	return true;
+}
+
+/** Finalize the HID TEMPer types. */
+bool temper_type_hid_exit( char **error )
+{
+	if ( hid_exit() != 0 )
+	{
+		if ( error != NULL )
+		{
+			*error = "Error shutting down the HID API.";
+		}
+		return false;
+	}
+	return true;
+}
+
+/** Enumerate the HID TEMPer devices. */
+struct tempered_device_list* temper_type_hid_enumerate( char **error )
+{
+	struct tempered_device_list *list = NULL, *current = NULL;
+	struct hid_device_info *devs, *info;
+	devs = hid_enumerate( 0, 0 );
+	if ( devs == NULL )
+	{
+		if ( error != NULL )
+		{
+			*error = "No HID devices were found.";
+		}
+		return NULL;
+	}
+	for ( info = devs; info; info = info->next )
+	{
+		temper_type* type = get_temper_type( info );
+		if ( type != NULL && !type->ignored )
+		{
+			printf(
+				"Device %04hx:%04hx if %d rel %4hx | %s | %ls %ls\n",
+				info->vendor_id, info->product_id,
+				info->interface_number, info->release_number,
+				info->path,
+				info->manufacturer_string, info->product_string
+			);
+			struct tempered_device_list *next = malloc(
+				sizeof( struct tempered_device_list )
+			);
+			if ( next == NULL )
+			{
+				tempered_free_device_list( list );
+				if ( error != NULL )
+				{
+					*error = "Unable to allocate memory for list.";
+				}
+				return NULL;
+			}
+			
+			next->next = NULL;
+			next->path = strdup( info->path );
+			next->internal_data = type;
+			next->type_name = type->name;
+			next->vendor_id = info->vendor_id;
+			next->product_id = info->product_id;
+			next->interface_number = info->interface_number;
+			
+			if ( next->path == NULL )
+			{
+				free( next );
+				tempered_free_device_list( list );
+				if ( error != NULL )
+				{
+					*error = "Unable to allocate memory for path.";
+				}
+				return NULL;
+			}
+			
+			if ( current == NULL )
+			{
+				list = next;
+				current = list;
+			}
+			else
+			{
+				current->next = next;
+				current = current->next;
+			}
+		}
+	}
+	hid_free_enumeration( devs );
+	return list;
+}
 
 bool temper_type_hid_open( tempered_device* device )
 {

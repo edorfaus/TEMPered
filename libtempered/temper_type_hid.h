@@ -30,6 +30,15 @@ struct temper_type_hid_data {
 	int humidity_low_byte_offset;
 };
 
+/** Initialize the HID TEMPer types. */
+bool temper_type_hid_init( char **error );
+
+/** Finalize the HID TEMPer types. */
+bool temper_type_hid_exit( char **error );
+
+/** Enumerate the HID TEMPer devices. */
+struct tempered_device_list* temper_type_hid_enumerate( char **error );
+
 /** Method for opening HID devices. */
 bool temper_type_hid_open( tempered_device* device );
 

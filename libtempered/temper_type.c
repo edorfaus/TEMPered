@@ -124,3 +124,21 @@ temper_type* get_temper_type( struct hid_device_info *info )
 	}
 	return NULL;
 }
+
+/** Initialize the TEMPer types. */
+bool temper_type_init( char **error )
+{
+	return temper_type_hid_init( error );
+}
+
+/** Finalize the TEMPer types. */
+bool temper_type_exit( char **error )
+{
+	return temper_type_hid_exit( error );
+}
+
+/** Enumerate the known TEMPer devices. */
+struct tempered_device_list* temper_type_enumerate( char **error )
+{
+	return temper_type_hid_enumerate( error );
+}

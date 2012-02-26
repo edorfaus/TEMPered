@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "hidapi.h"
-
 #include "tempered.h"
 #include "tempered-internal.h"
 
@@ -34,88 +32,19 @@ void tempered_set_error( tempered_device *device, char *error )
 /** Initialize the TEMPered library. */
 bool tempered_init( char **error )
 {
-	if ( hid_init() != 0 )
-	{
-		set_error( "Could not initialize the HID API." );
-		return false;
-	}
-	return true;
+	return temper_type_init( error );
 }
 
 /** Finalize the TEMPered library. */
 bool tempered_exit( char **error )
 {
-	if ( hid_exit() != 0 )
-	{
-		set_error( "Error shutting down the HID API." );
-		return false;
-	}
-	return true;
+	return temper_type_exit( error );
 }
 
 /** Enumerate the TEMPer devices. */
 struct tempered_device_list* tempered_enumerate( char **error )
 {
-	struct tempered_device_list *list = NULL, *current = NULL;
-	struct hid_device_info *devs, *info;
-	devs = hid_enumerate( 0, 0 );
-	if ( devs == NULL )
-	{
-		set_error( "No HID devices were found." );
-		return NULL;
-	}
-	for ( info = devs; info; info = info->next )
-	{
-		temper_type* type = get_temper_type( info );
-		if ( type != NULL && !type->ignored )
-		{
-			printf(
-				"Device %04hx:%04hx if %d rel %4hx | %s | %ls %ls\n",
-				info->vendor_id, info->product_id,
-				info->interface_number, info->release_number,
-				info->path,
-				info->manufacturer_string, info->product_string
-			);
-			struct tempered_device_list *next = malloc(
-				sizeof( struct tempered_device_list )
-			);
-			if ( next == NULL )
-			{
-				tempered_free_device_list( list );
-				set_error( "Unable to allocate memory for list." );
-				return NULL;
-			}
-			
-			next->next = NULL;
-			next->path = strdup( info->path );
-			next->internal_data = type;
-			next->type_name = type->name;
-			next->vendor_id = info->vendor_id;
-			next->product_id = info->product_id;
-			next->interface_number = info->interface_number;
-			
-			if ( next->path == NULL )
-			{
-				free( next );
-				tempered_free_device_list( list );
-				set_error( "Unable to allocate memory for path." );
-				return NULL;
-			}
-			
-			if ( current == NULL )
-			{
-				list = next;
-				current = list;
-			}
-			else
-			{
-				current->next = next;
-				current = current->next;
-			}
-		}
-	}
-	hid_free_enumeration( devs );
-	return list;
+	return temper_type_enumerate( error );
 }
 
 /** Free the memory used by the given device list. */

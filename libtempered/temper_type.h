@@ -74,5 +74,23 @@ extern temper_type known_temper_types[];
  */
 temper_type* get_temper_type( struct hid_device_info *info );
 
-#endif
+/** Initialize the TEMPer types. */
+bool temper_type_init( char **error );
 
+/** Finalize the TEMPer types. */
+bool temper_type_exit( char **error );
+
+/** Enumerate the known TEMPer devices.
+ *
+ * This function returns a linked list of all the recognized TEMPer devices
+ * attached to the system (excluding the ones that are ignored).
+ *
+ * @param error If an error occurs and this is not NULL, it will be set to the
+ * error message.
+ * @return A pointer to the first device in the enumerated list, or NULL on
+ * error. This list should be freed with tempered_free_device_list when you
+ * are done with it.
+ */
+struct tempered_device_list* temper_type_enumerate( char **error );
+
+#endif
