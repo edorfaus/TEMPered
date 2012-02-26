@@ -20,13 +20,15 @@ temper_type known_temper_types[]={
 		.vendor_id=0x0c45,
 		.product_id=0x7402,
 		.interface_number=1,
-		.temp_report_length=8,
-		.temp_report={1,0x80,0x33,1,0,0,0,0},
-		.temperature_high_byte_offset=2,
-		.temperature_low_byte_offset=3,
-		.has_humidity=true,
-		.humidity_high_byte_offset=4,
-		.humidity_low_byte_offset=5
+		.data = &(struct temper_type_hid_data){
+			.report_length = 8,
+			.report_data = { 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
+			.temperature_high_byte_offset = 2,
+			.temperature_low_byte_offset = 3,
+			.has_humidity = true,
+			.humidity_high_byte_offset = 4,
+			.humidity_low_byte_offset = 5
+		}
 	},
 	{
 		.name="TEMPerV1.2",
@@ -41,13 +43,15 @@ temper_type known_temper_types[]={
 		.vendor_id=0x0c45,
 		.product_id=0x7401,
 		.interface_number=1,
-		.temp_report_length=8,
-		.temp_report={1,0x80,0x33,1,0,0,0,0},
-		.temperature_high_byte_offset=2,
-		.temperature_low_byte_offset=3
 		.open = temper_type_hid_open,
 		.close = temper_type_hid_close,
 		.get_temperature = temper_type_hid_get_temperature,
+		.data = &(struct temper_type_hid_data){
+			.report_length = 8,
+			.report_data = { 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
+			.temperature_high_byte_offset = 2,
+			.temperature_low_byte_offset = 3
+		},
 	},
 	{
 		.name="TEMPer, TEMPerNTC or TEMPerHUM",
@@ -62,10 +66,12 @@ temper_type known_temper_types[]={
 		.vendor_id=0x1130,
 		.product_id=0x660c,
 		.interface_number=1,
-		.temp_report_length=8,
-		.temp_report={0x54,0,0,0,0,0,0,0},
-		.temperature_high_byte_offset=0,
-		.temperature_low_byte_offset=1
+		.data = &(struct temper_type_hid_data){
+			.report_length = 8,
+			.report_data = { 0x54, 0, 0, 0, 0, 0, 0, 0 },
+			.temperature_high_byte_offset = 0,
+			.temperature_low_byte_offset = 1
+		}
 	},
 	{
 		.name="TEMPerHUM (experimental)",
@@ -73,13 +79,15 @@ temper_type known_temper_types[]={
 		.vendor_id=0x1130,
 		.product_id=0x660c,
 		.interface_number=1,
-		.temp_report_length=8,
-		.temp_report={0x48,0,0,0,0,0,0,0},
-		.temperature_high_byte_offset=0,
-		.temperature_low_byte_offset=1,
-		.has_humidity=true,
-		.humidity_high_byte_offset=2,
-		.humidity_low_byte_offset=3
+		.data = &(struct temper_type_hid_data){
+			.report_length = 8,
+			.report_data = { 0x48, 0, 0, 0, 0, 0, 0, 0 },
+			.temperature_high_byte_offset = 0,
+			.temperature_low_byte_offset = 1,
+			.has_humidity = true,
+			.humidity_high_byte_offset = 2,
+			.humidity_low_byte_offset = 3
+		}
 	},
 	{ .name=NULL } // List terminator
 };

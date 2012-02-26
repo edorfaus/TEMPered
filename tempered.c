@@ -152,6 +152,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	}
 	device->type = type;
 	device->error = NULL;
+	device->data = NULL;
 	device->path = strdup( list->path );
 	if ( device->path == NULL )
 	{

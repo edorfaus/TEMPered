@@ -22,10 +22,8 @@ struct tempered_device_ {
 	/** The last error that occurred with this device. */
 	char *error;
 	
-	/** HID device pointer for this device.
-	 * TODO: move this into type-specific data.
-	 */
-	hid_device *hid_dev;
+	/** Device-specific data for this device. */
+	void *data;
 };
 
 /** Set the last error message for the given device.

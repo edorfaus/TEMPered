@@ -7,10 +7,6 @@
 
 #include "tempered.h"
 
-/** The maximum length of the temperature report data.
- */
-#define TEMPER_TYPE_TEMP_REPORT_MAX_LENGTH 8
-
 /** This struct represents a type of recognized device, containing some useful
  * information on it that is used to recognize it and to read the temperature
  * from its sensor.
@@ -41,6 +37,10 @@ typedef struct temper_type {
 	 */
 	int interface_number;
 	
+	/** Type specific data for this type.
+	 */
+	void *data;
+	
 	/** The method to use to open a device of this type.
 	 */
 	bool (*open)( tempered_device* );
@@ -52,41 +52,6 @@ typedef struct temper_type {
 	/** The method to use to get the temperature from a device of this type.
 	 */
 	bool (*get_temperature)( tempered_device*, float* );
-	
-	/** Report to send to the device to read the temperature.
-	 * Only valid if ignored is false.
-	 */
-	unsigned char temp_report[TEMPER_TYPE_TEMP_REPORT_MAX_LENGTH];
-	
-	/** Length in bytes of the temperature report (temp_report field).
-	 * Only valid if ignored is false.
-	 */
-	int temp_report_length;
-	
-	/** Offset in the response containing the high byte of the temperature.
-	 * Only valid if ignored is false.
-	 */
-	int temperature_high_byte_offset;
-	
-	/** Offset in the response containing the low byte of the temperature.
-	 * Only valid if ignored is false.
-	 */
-	int temperature_low_byte_offset;
-	
-	/** Whether or not this device has a humidity sensor.
-	 * Only valid if ignored is false.
-	 */
-	bool has_humidity;
-	
-	/** Offset in the response containing the high byte of the humidity.
-	 * Only valid if ignored is false and has_humidity is true.
-	 */
-	int humidity_high_byte_offset;
-	
-	/** Offset in the response containing the low byte of the humidity.
-	 * Only valid if ignored is false and has_humidity is true.
-	 */
-	int humidity_low_byte_offset;
 	
 } temper_type;
 
