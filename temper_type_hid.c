@@ -93,10 +93,21 @@ bool temper_type_hid_get_temperature( tempered_device* device, float* tempC )
 		+ ( (signed char)data[info->temperature_high_byte_offset] << 8 )
 	;
 	
-	// This is the same as dividing by 256; basically moving the
-	// decimal point into place.
-	// This formula is from the FM75 datasheet.
-	*tempC = temp * 125.0 / 32000.0;
+	if ( info->has_humidity )
+	{
+		// This temperature formula is based on the Sensirion SHT1x datasheet,
+		// and uses the high-resolution numbers; low-resolution is probably
+		// not really relevant for our uses.
+		// We're here using d1 for VDD = 3.5V, as that matches best.
+		*tempC = -39.7 + 0.01 * temp;
+	}
+	else
+	{
+		// This temperature formula is taken from the FM75 datasheet.
+		// This is the same as dividing by 256; basically moving the
+		// decimal point into place.
+		*tempC = temp * 125.0 / 32000.0;
+	}
 	
 	return true;
 }
