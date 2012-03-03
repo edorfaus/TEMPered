@@ -2,7 +2,7 @@
 #include <string.h>
 #include "hidapi.h"
 #include "temper_type.h"
-#include "temper_type_hid.h"
+#include "type_hid/common.h"
 
 #define DATA_MAX_LENGTH 256
 

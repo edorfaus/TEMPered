@@ -3,7 +3,7 @@
 
 #include "temper_type.h"
 
-#include "temper_type_hid.h"
+#include "type_hid/common.h"
 
 // This is an array of known TEMPer types.
 temper_type known_temper_types[]={

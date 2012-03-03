@@ -1,7 +1,7 @@
 #ifndef TEMPER_TYPE_HID_H
 #define TEMPER_TYPE_HID_H
 
-#include "tempered.h"
+#include "../tempered.h"
 
 /** The maximum length of the temperature report data. */
 #define TEMPER_TYPE_HID_REPORT_MAX_LENGTH 8

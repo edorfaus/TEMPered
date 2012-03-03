@@ -4,10 +4,10 @@
 #include <string.h>
 #include <hidapi.h>
 
-#include "temper_type_hid.h"
+#include "common.h"
 
-#include "tempered.h"
-#include "tempered-internal.h"
+#include "../tempered.h"
+#include "../tempered-internal.h"
 
 /** The struct that is stored in device->data for this type of device. */
 struct temper_type_hid_device_data

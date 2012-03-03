@@ -21,7 +21,8 @@ CC=gcc
 CFLAGS+=-I$(HIDAPI_DIR)/hidapi -Wall -g `pkg-config libusb-1.0 --cflags`
 LIBS=`pkg-config libusb-1.0 libudev --libs` -lm
 
-LIB_OBJECTS=$(patsubst libtempered/%.c,build/%.o,$(wildcard libtempered/*.c))
+LIB_SOURCES=$(shell find libtempered -name \*.c)
+LIB_OBJECTS=$(patsubst libtempered/%.c,build/%.o,$(LIB_SOURCES))
 
 PROGRAMS=$(patsubst %.c,%,$(wildcard utils/*.c))
 
@@ -30,11 +31,8 @@ all: $(PROGRAMS)
 $(HIDAPI_LIB):
 	$(error You must build HIDAPI before building this)
 
-build/.directory:
-	mkdir -p build
-	@touch build/.directory
-
-build/%.o: libtempered/%.c build/.directory
+build/%.o: libtempered/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 libtempered.a: $(LIB_OBJECTS)
