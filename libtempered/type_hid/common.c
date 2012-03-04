@@ -20,6 +20,9 @@ struct temper_type_hid_device_data
 	
 	/** The data that has been read from the device. */
 	unsigned char data[64];
+	
+	/** The HID device info for this device. */
+	struct temper_type_hid_data *dev_info;
 };
 
 /** Initialize the HID TEMPer types. */
@@ -146,6 +149,7 @@ bool temper_type_hid_open( tempered_device* device )
 		return false;
 	}
 	device_data->data_length = 0;
+	device_data->dev_info = (struct temper_type_hid_data*) device->type->data;
 	device->data = device_data;
 	return true;
 }
@@ -160,11 +164,10 @@ void temper_type_hid_close( tempered_device* device )
 
 bool temper_type_hid_read_sensors( tempered_device* device )
 {
-	struct temper_type_hid_data *info =
-		(struct temper_type_hid_data*) device->type->data;
-	
 	struct temper_type_hid_device_data *device_data =
 		(struct temper_type_hid_device_data *) device->data;
+	
+	struct temper_type_hid_data *info = device_data->dev_info;
 	
 	hid_device *hid_dev = device_data->hid_dev;
 	
@@ -220,11 +223,10 @@ bool temper_type_hid_read_sensors( tempered_device* device )
 bool temper_type_hid_get_temperature(
 	tempered_device* device, int sensor, float* tempC
 ) {
-	struct temper_type_hid_data *info =
-		(struct temper_type_hid_data*) device->type->data;
-	
 	struct temper_type_hid_device_data *device_data =
 		(struct temper_type_hid_device_data *) device->data;
+	
+	struct temper_type_hid_data *info = device_data->dev_info;
 	
 	if (
 		device_data->data_length <= info->temperature_high_byte_offset ||
@@ -271,8 +273,10 @@ bool temper_type_hid_get_temperature(
 bool temper_type_hid_get_humidity(
 	tempered_device* device, int sensor, float* rel_hum
 ) {
-	struct temper_type_hid_data *info =
-		(struct temper_type_hid_data*) device->type->data;
+	struct temper_type_hid_device_data *device_data =
+		(struct temper_type_hid_device_data *) device->data;
+	
+	struct temper_type_hid_data *info = device_data->dev_info;
 	
 	if ( !info->has_humidity )
 	{
@@ -287,9 +291,6 @@ bool temper_type_hid_get_humidity(
 	{
 		return false;
 	}
-	
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
 	
 	if (
 		device_data->data_length <= info->humidity_high_byte_offset ||
