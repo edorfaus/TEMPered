@@ -121,16 +121,14 @@ bool temper_type_hid_open( tempered_device* device )
 	);
 	if ( device_data == NULL )
 	{
-		tempered_set_error(
-			device, strdup( "Failed to allocate memory for the device data." )
-		);
+		device->error = "Failed to allocate memory for the device data.";
 		return false;
 	}
 	device_data->hid_dev = hid_open_path( device->path );
 	if ( device_data->hid_dev == NULL )
 	{
 		free( device_data );
-		tempered_set_error( device, strdup( "Failed to open HID device." ) );
+		device->error = "Failed to open HID device.";
 		return false;
 	}
 	device_data->data_length = 0;
