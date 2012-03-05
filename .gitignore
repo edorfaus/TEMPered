@@ -1,8 +1,6 @@
-/libtempered/core.o
-/libtempered/temper_type.o
-/libtempered/temper_type_hid.o
 /utils/enumerate
 /utils/tempered
 /utils/dump-data
+/utils/hid-query
 /libtempered.a
 /build
