@@ -4,6 +4,7 @@
 #include "temper_type.h"
 
 #include "type_hid/common.h"
+#include "type_hid/1130_660c.h"
 
 // This is an array of known TEMPer types.
 temper_type known_temper_types[]={
@@ -60,48 +61,75 @@ temper_type known_temper_types[]={
 		},
 	},
 	{
-		.name="TEMPer, TEMPerNTC or TEMPerHUM",
+		.name="HidTEMPer1, 2, NTC or HUM",
 		.ignored=true,
 		.vendor_id=0x1130,
 		.product_id=0x660c,
 		.interface_number=0
 	},
 	{
-		.name="TEMPer (experimental)",
+		.name="HidTEMPer1, 2, NTC or HUM (experimental)",
 		.ignored=false,
 		.vendor_id=0x1130,
 		.product_id=0x660c,
 		.interface_number=1,
-		.open = temper_type_hid_open,
-		.close = temper_type_hid_close,
-		.read_sensors = temper_type_hid_read_sensors,
-		.get_temperature = temper_type_hid_get_temperature,
-		.data = &(struct temper_type_hid_data){
-			.report_length = 8,
-			.report_data = { 0x54, 0, 0, 0, 0, 0, 0, 0 },
-			.temperature_high_byte_offset = 0,
-			.temperature_low_byte_offset = 1
-		}
-	},
-	{
-		.name="TEMPerHUM (experimental)",
-		.ignored=false,
-		.vendor_id=0x1130,
-		.product_id=0x660c,
-		.interface_number=1,
-		.open = temper_type_hid_open,
+		.open = temper_type_hid_1130_660c_open,
 		.close = temper_type_hid_close,
 		.read_sensors = temper_type_hid_read_sensors,
 		.get_temperature = temper_type_hid_get_temperature,
 		.get_humidity = temper_type_hid_get_humidity,
-		.data = &(struct temper_type_hid_data){
-			.report_length = 8,
-			.report_data = { 0x48, 0, 0, 0, 0, 0, 0, 0 },
-			.temperature_high_byte_offset = 0,
-			.temperature_low_byte_offset = 1,
-			.has_humidity = true,
-			.humidity_high_byte_offset = 2,
-			.humidity_low_byte_offset = 3
+		.data = &(struct temper_type_hid_1130_660c_data[]){
+			{
+				.id = 0x58,
+				.name = "HidTEMPer1 (experimental)",
+				.data = {
+					.report_length = 8,
+					.report_data = { 0x54, 0, 0, 0, 0, 0, 0, 0 },
+					.temperature_high_byte_offset = 0,
+					.temperature_low_byte_offset = 1
+				}
+			},
+			{
+				.id = 0x59,
+				.name = "HidTEMPer2 (experimental)",
+				// Note: this thing has 2 sensors, internal and external
+				// The internal sensor uses 0x54, the external 0x53...
+				.data = {
+					.report_length = 8,
+					.report_data = { 0x54, 0, 0, 0, 0, 0, 0, 0 },
+					.temperature_high_byte_offset = 0,
+					.temperature_low_byte_offset = 1
+				}
+			},
+			{
+				.id = 0x5b,
+				.name = "HidTEMPerNTC (experimental)",
+				// Note: this thing has 2 sensors, internal and external
+				// The internal sensor uses 0x54, and is the usual FM75 type
+				// The external sensor uses 0x41, and is completely different.
+				.data = {
+					.report_length = 8,
+					.report_data = { 0x54, 0, 0, 0, 0, 0, 0, 0 },
+					.temperature_high_byte_offset = 0,
+					.temperature_low_byte_offset = 1
+				}
+			},
+			/*
+			{
+				.id = 0x??,
+				.name = "HidTEMPerHUM (experimental)",
+				.data = {
+					.report_length = 8,
+					.report_data = { 0x48, 0, 0, 0, 0, 0, 0, 0 },
+					.temperature_high_byte_offset = 0,
+					.temperature_low_byte_offset = 1,
+					.has_humidity = true,
+					.humidity_high_byte_offset = 2,
+					.humidity_low_byte_offset = 3
+				}
+			},
+			*/
+			{ .name = NULL } // Subtype list terminator
 		}
 	},
 	{ .name=NULL } // List terminator
