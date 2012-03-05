@@ -1,6 +1,8 @@
 #ifndef TEMPER_TYPE_HID_INTERNAL_H
 #define TEMPER_TYPE_HID_INTERNAL_H
 
+#include <hidapi.h>
+
 #include "common.h"
 
 /** The struct that is stored in device->data for this type of device. */
