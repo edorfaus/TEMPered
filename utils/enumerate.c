@@ -1,6 +1,6 @@
+#include <stdlib.h>
 #include <stdio.h>
-
-#include "tempered.h"
+#include <tempered.h>
 
 void print_error( char *error )
 {
