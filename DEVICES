@@ -1,22 +1,36 @@
 This is a list of the currently known devices, providing some basic information
 on them and how well they work with this project's code, if at all.
 
-At the moment, the code only works with devices using the HID drivers, and will
-require some restructuring to work with devices acting like a serial port.
-Some of that restructuring is already planned, for other reasons, and the rest
-will likely happen sooner or later.
+At the moment, the code only works with devices using the HID drivers, but we
+intend to add support for devices acting like a serial port eventually.
 
-0c45:7401	WORKS
-	HID: TEMPerV1.2
-	This device has one internal temperature sensor, which appears to be a
-	Fairchild FM75 or compatible sensor chip.
-	This was the first device owned by EdorFaus, and hence was the first one to
-	be supported, and the one having seen the most testing during development.
+0c45:7401
+	HID
+	I do not yet know how to recognize the different subtypes of this device,
+	as until recently I believed the TEMPerV1.2 device to be the only one using
+	these USB IDs. I hope it can be done similarly to the 1130:660c devices.
+	
+	TEMPerV1.2	WORKS
+		This device has one internal temperature sensor, which appears to be a
+		Fairchild FM75 or compatible sensor chip.
+		This was the first device owned by EdorFaus, and hence was the first
+		one to be supported, and sees the most testing during development.
+		This is the type Cray's pcsensor program was written for.
+	
+	TEMPer2.2	EXPERIMENTAL PARTIAL
+		This device has two temperature sensors, one internal and one external.
+		First reported to exist 2012-03-08 in relavak's comments.
+		It has been reported to work with Cray's pcsensor, with the external
+		sensor on offsets 5,4 and the internal on 3,2 just like TEMPerV1.2.
+		Hence, reading the internal sensor should already work, but the
+		external one won't, as the code is not yet ready for multiple sensors.
 
-0c45:7402	WORKS
+0c45:7402	WORKS PROBABLY
 	HID: TEMPer2HumiV1.x
 	Both V1.0 and V1.1 have been seen; V1.1 was confirmed working at 2011-12-28
 	in issue #1 after commit b668b00eb16675eba53385edeff6b0a70b38a614.
+	However, the code has been restructured since then - but since it's so
+	similar to the TEMPerV1.2 device, which works, it should still work.
 	This device has one internal temperature and humidity sensor, which appears
 	to be a Sensirion SHT1x or compatible sensor chip.
 	Read method is the same as TEMPerV1.2, but needs a different formula for
@@ -26,25 +40,44 @@ will likely happen sooner or later.
 	HID
 	USB product strings are the same; device recognition can be done by reading
 	from the device (there's an identification byte in a separate data area).
+	I believe these are older than the 0c45 devices.
 	
-	TEMPer	EXPERIMENTAL
+	0x58: HidTEMPer1	EXPERIMENTAL
 		I think this has one internal temperature sensor, as that's what the
 		original temper-1.0 code by relevak reads.
 		There's some experimental code in this project to read the temperature,
 		which might work, but has not yet been confirmed to work.
 		The offsets are known, but the code that reads the sensor data is new.
 	
-	TEMPerHUM	EXPERIMENTAL
+	0x59: HidTEMPer2	EXPERIMENTAL PARTIAL
+		I think this has two temperature sensors (internal and external), that
+		both use the FM75 way of calculating the temperature.
+		There's some experimental code in this project to read the temperature
+		of the internal sensor, which might work, but has not yet been tested.
+		The external sensor has not been defined in the temper type data,
+		because the code is not yet ready for devices with multiple sensors.
+	
+	0x??: HidTEMPerHUM	NEED INFO
 		I think this has one internal temperature and humidity sensor; not sure
 		whether or not that sensor works like TEMPer2HumiV1.x's sensor.
+		The value of the ID byte for this device subtype is not known, and must
+		be found before it can be supported. The tempered program should print
+		this ID when attempting to read this device; please tell me the value.
 		There's some experimental code in this project to read the temperature
 		and humidity, which might work, but has not yet been confirmed to work.
 		The offsets are known, but the code that reads the sensor data is new.
 	
-	TEMPerNTC	NOT YET
-		I think this has one temperature sensor that works differently from
-		most of the other temperature sensors; I haven't looked at it yet, but
-		do plan to add code for it eventually.
+	0x5b: HidTEMPerNTC	EXPERIMENTAL PARTIAL
+		I think this has two temperature sensors, one FM75 type internal and
+		one NTC-type external (which works completely differently from the
+		other types). (I originally thought this only had the external one.)
+		There's some experimental code in this project to read the temperature
+		of the internal sensor, which might work, but has not yet been tested.
+		The external sensor is completely different than the other known types,
+		and appears to require multiple reads and writing back the gain on the
+		fly, and a complex calculation that goes via volts and uses calibration
+		- so it is not yet supported, both because of the above, and because
+		the code is not yet ready for devices with multiple sensors.
 
 ?:?	NOT YET
 	serial: TEMPer232
@@ -52,7 +85,6 @@ will likely happen sooner or later.
 	supposedly available, I haven't seen them (nor looked for them).
 	I've only seen it mentioned in relevak's thread, which also has mentions
 	of it being problematic.
-	Requires some restructuring for the code to work with serial devices.
 
 1a86:7523	NOT YET
 	serial: TEMPer16
@@ -63,11 +95,10 @@ will likely happen sooner or later.
 	standard 3.5mm audio connectors to connect the sensors, probably using the
 	1wire protocol; I'm guessing it contains two 1wire bus chips, and addresses
 	the sensors individually when reading.
-	Requires some restructuring for the code to work with serial devices, and
-	for the number of sensors only being known after device initialization.
 	Theoretically, the number of sensors can change at any time, as can which
 	ones are connected, but I'm not so sure we want to allow that in practice,
 	since it can be easily done by reopening the device. An alternative would
 	be to always say 16 sensors, and simply fail the reading of ones that
 	aren't currently connected - assuming that works in practice (it might).
 	That would move the management of this to the users of the library.
+	Note: a lot of this is guesswork, and I may be mixing multiple types here.

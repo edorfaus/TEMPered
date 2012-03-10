@@ -1,38 +1,30 @@
-This project started as the idea of combining the various programs and
-libraries for reading the TEMPer thermometer devices into one general library
-that could read them all, providing a unified interface to applications.
+This project is a C implementation of a library and program to read all the
+various types of TEMPer thermometer and hygrometer USB devices, as produced by
+RDing Technology and sold under the name PCsensor.
 
 This is, of course, complicated by the fact that I currently only have one
-variant of those devices myself, namely the TEMPerV1.2 USB HID device.
+variant of those devices myself, namely the TEMPerV1.2 USB HID device, and by
+them creating a whole bunch of technically different devices under the same
+names - yet often reusing the same hardware (including USB IDs) for different
+devices with different features.
 
-On the way, I realized that, at least the program[1] that works for the device
-I actually have, basically implements the HID standard, because it's based on
-replicating what is seen with USB sniffing.
+Hence, only a few of the devices are currently supported, but I'm working to
+add support for as many as I can, as quickly as I can. I will need help here.
 
-To avoid this, I looked for a HID library, and found HIDAPI[2], which in
-addition to being open source is also cross-platform, which is positive.
-
-This enabled me to fairly quickly make a much simpler program than the original
-that does basically the same thing, namely read the temperature off the sensor.
-
-Since then, I've been changing and adding to the code, to make the various
-device variants work as well as I can, and intend to continue doing that.
 See the DEVICES file for more information on the currently known devices and
 how well they work (if at all).
 
 
-As yet, this is as far as I have gotten - which includes these programs:
-- enumerate: lists the devices attached to the system, -a includes unknown ones
-- temperhid: reads the temperature off either all found devices, or those given
-- dump-data: reads the data off the same devices as temperhid, and dumps it in
-    raw format, which can be useful for debugging and adding new device support
+In addition to the library itself, this project includes these utilities:
+- enumerate: lists the recognized devices attached to the system
+- tempered : reads the sensors of either all found devices, or those specified
+    as parameters, and prints the readings to standard output.
+- hid-query: sends an arbitrary query to a user-specified HID device, and
+    prints the returned result as hex bytes. This is mostly useful when adding
+    support for new devices or during debugging, and can be a little dangerous.
 
 
-I have not yet implemented all the features of Cray's pcsensor program,
-and may not get around to doing that for quite a while, as I don't need them.
-
-
-To build the programs, first clone both this and HIDAPI[2], then build HIDAPI
+To build the programs, first clone both this and HIDAPI[1], then build HIDAPI
 for your platform (I mostly use the Linux/hidraw implementation), then adjust
 the path in the Makefile (if necessary) to point to the built HIDAPI source,
 then run make.
@@ -42,9 +34,6 @@ packages for libudev and/or libusb first (for the right library versions).
 
 
 
-[1] The program I'm talking about is called pcsensor-1.0.0, by Cray, seen here:
-http://relavak.wordpress.com/2009/10/17/temper-temperature-sensor-linux-driver/#comment-202
-
-[2] The HIDAPI library can be found here: http://www.signal11.us/oss/hidapi/
+[1] The HIDAPI library can be found here: http://www.signal11.us/oss/hidapi/
 with source on GitHub here: https://github.com/signal11/hidapi
 This project uses features not available in version 0.6; use 0.7 or newer.
