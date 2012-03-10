@@ -67,7 +67,18 @@ bool temper_type_hid_1130_660c_open( tempered_device* device )
 	{
 		// Subtype was not found.
 		temper_type_hid_close( device );
-		tempered_set_error( device, strdup( "Unknown device subtype." ) );
+		int size = snprintf(
+			NULL, 0, "Unknown device subtype: 0x%02x",
+			device_id
+		);
+		// TODO: check that size >= 0
+		size++;
+		char *error = malloc( size );
+		size = snprintf(
+			error, size, "Unknown device subtype: 0x%02x",
+			device_id
+		);
+		tempered_set_error( device, error );
 		return false;
 	}
 	
