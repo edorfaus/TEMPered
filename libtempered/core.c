@@ -8,13 +8,6 @@
 
 #include "temper_type.h"
 
-/** This define is used for convenience to set the error message only when the
- * pointer to it is not NULL, and depends on the parameter being named "error".
- */
-#define set_error( error_msg ) do { \
-		if ( error != NULL ) { *error = error_msg; } \
-	} while (false)
-
 /** Set the last error message on the given device. */
 void tempered_set_error( tempered_device *device, char *error )
 {
@@ -64,19 +57,28 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 {
 	if ( list == NULL || list->internal_data == NULL )
 	{
-		set_error( "Invalid device given." );
+		if ( error != NULL )
+		{
+			*error = strdup( "Invalid device given." );
+		}
 		return NULL;
 	}
 	temper_type * type = (temper_type *)list->internal_data;
 	if ( type->open == NULL )
 	{
-		set_error( "Device type has no open method." );
+		if ( error != NULL )
+		{
+			*error = strdup( "Device type has no open method." );
+		}
 		return NULL;
 	}
 	tempered_device *device = malloc( sizeof( tempered_device ) );
 	if ( device == NULL )
 	{
-		set_error( "Could not allocate memory for the device." );
+		if ( error != NULL )
+		{
+			*error = strdup( "Could not allocate memory for the device." );
+		}
 		return NULL;
 	}
 	device->type = type;
@@ -85,19 +87,27 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	device->path = strdup( list->path );
 	if ( device->path == NULL )
 	{
-		set_error( "Could not allocate memory for the path." );
+		if ( error != NULL )
+		{
+			*error = strdup( "Could not allocate memory for the path." );
+		}
 		free( device );
 		return NULL;
 	}
 	if ( !device->type->open( device ) )
 	{
-		if ( device->error != NULL )
+		if ( error != NULL )
 		{
-			set_error( device->error );
-		}
-		else
-		{
-			set_error( "Type-specific device open failed with no error." );
+			if ( device->error != NULL )
+			{
+				*error = device->error;
+			}
+			else
+			{
+				*error = strdup(
+					"Type-specific device open failed with no error message."
+				);
+			}
 		}
 		free( device->path );
 		free( device );

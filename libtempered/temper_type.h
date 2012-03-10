@@ -88,7 +88,8 @@ bool temper_type_exit( char **error );
  * attached to the system (excluding the ones that are ignored).
  *
  * @param error If an error occurs and this is not NULL, it will be set to the
- * error message.
+ * error message. The returned string is dynamically allocated, and should be
+ * freed when you're done with it.
  * @return A pointer to the first device in the enumerated list, or NULL on
  * error. This list should be freed with tempered_free_device_list when you
  * are done with it.

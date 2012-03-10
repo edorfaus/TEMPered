@@ -5,6 +5,7 @@
 void print_error( char *error )
 {
 	fprintf( stderr, "%s\n", error );
+	free( error );
 }
 
 int main( int argc, char **argv )

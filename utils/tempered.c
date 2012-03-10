@@ -97,6 +97,7 @@ void print_device( struct tempered_device_list *dev )
 			stderr, "%s: Could not open device: %s\n",
 			dev->path, error
 		);
+		free( error );
 		return;
 	}
 	if ( !tempered_read_sensors( device ) )
@@ -124,6 +125,7 @@ int main( int argc, char **argv )
 	if ( !tempered_init( &error ) )
 	{
 		fprintf( stderr, "Failed to initialize libtempered: %s\n", error );
+		free( error );
 		return 1;
 	}
 	
@@ -131,6 +133,7 @@ int main( int argc, char **argv )
 	if ( list == NULL )
 	{
 		fprintf( stderr, "Failed to enumerate devices: %s\n", error );
+		free( error );
 	}
 	else
 	{
@@ -175,6 +178,7 @@ int main( int argc, char **argv )
 	if ( !tempered_exit( &error ) )
 	{
 		fprintf( stderr, "%s\n", error );
+		free( error );
 		return 1;
 	}
 	return 0;

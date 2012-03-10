@@ -28,8 +28,11 @@ struct tempered_device_ {
 
 /** Set the last error message for the given device.
  * @param device The device for which to set the last error message.
+ * Note that if this parameter is NULL, the given error message will not be
+ * taken ownership of, leaving you to free it yourself.
  * @param error The error message to set for the device.
- * This message must be allocated on the heap, as it will be passed to free()
+ * This message must be dynamically allocated, as the device will take
+ * ownership of the string and will pass the given pointer to free()
  * when the device is closed or another error is set.
  */
 void tempered_set_error( tempered_device *device, char *error );

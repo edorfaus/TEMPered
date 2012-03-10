@@ -17,7 +17,7 @@ bool temper_type_hid_init( char **error )
 	{
 		if ( error != NULL )
 		{
-			*error = "Could not initialize the HID API.";
+			*error = strdup( "Could not initialize the HID API." );
 		}
 		return false;
 	}
@@ -31,7 +31,7 @@ bool temper_type_hid_exit( char **error )
 	{
 		if ( error != NULL )
 		{
-			*error = "Error shutting down the HID API.";
+			*error = strdup( "Error shutting down the HID API." );
 		}
 		return false;
 	}
@@ -48,7 +48,7 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 	{
 		if ( error != NULL )
 		{
-			*error = "No HID devices were found.";
+			*error = strdup( "No HID devices were found." );
 		}
 		return NULL;
 	}
@@ -74,7 +74,7 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 				tempered_free_device_list( list );
 				if ( error != NULL )
 				{
-					*error = "Unable to allocate memory for list.";
+					*error = strdup( "Unable to allocate memory for list." );
 				}
 				return NULL;
 			}
@@ -93,7 +93,7 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 				tempered_free_device_list( list );
 				if ( error != NULL )
 				{
-					*error = "Unable to allocate memory for path.";
+					*error = strdup( "Unable to allocate memory for path." );
 				}
 				return NULL;
 			}
@@ -121,14 +121,16 @@ bool temper_type_hid_open( tempered_device* device )
 	);
 	if ( device_data == NULL )
 	{
-		device->error = "Failed to allocate memory for the device data.";
+		tempered_set_error(
+			device, strdup( "Failed to allocate memory for the device data." )
+		);
 		return false;
 	}
 	device_data->hid_dev = hid_open_path( device->path );
 	if ( device_data->hid_dev == NULL )
 	{
 		free( device_data );
-		device->error = "Failed to open HID device.";
+		tempered_set_error( device, strdup( "Failed to open HID device." ) );
 		return false;
 	}
 	device_data->data_length = 0;

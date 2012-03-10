@@ -56,7 +56,8 @@ typedef struct tempered_device_ tempered_device;
  * called at the start of execution if there's a chance the library will be
  * used by multiple threads simultaneously.
  * @param error If an error occurs and this is not NULL, it will be set to the
- * error message.
+ * error message. The returned string is dynamically allocated, and should be
+ * freed when you're done with it.
  * @return true on success, false on error.
  */
 bool tempered_init( char **error );
@@ -65,7 +66,8 @@ bool tempered_init( char **error );
  *
  * This function should be called at the end of execution to avoid memory leaks.
  * @param error If an error occurs and this is not NULL, it will be set to the
- * error message.
+ * error message. The returned string is dynamically allocated, and should be
+ * freed when you're done with it.
  * @return true on success, false on error.
  */
 bool tempered_exit( char **error );
@@ -76,7 +78,8 @@ bool tempered_exit( char **error );
  * attached to the system (excluding the ones that are ignored).
  *
  * @param error If an error occurs and this is not NULL, it will be set to the
- * error message.
+ * error message. The returned string is dynamically allocated, and should be
+ * freed when you're done with it.
  * @return A pointer to the first device in the enumerated list, or NULL on
  * error. This list should be freed with tempered_free_device_list when you
  * are done with it.
@@ -98,7 +101,8 @@ void tempered_free_device_list( struct tempered_device_list *list );
  * using the device.
  * @param list The device list entry that should be opened.
  * @param error If an error occurs and this is not NULL, it will be set to the
- * error message.
+ * error message. The returned string is dynamically allocated, and should be
+ * freed when you're done with it.
  * @return The opened device, or NULL on error.
  * @see tempered_close()
  * @see tempered_enumerate()
@@ -118,8 +122,8 @@ void tempered_close( tempered_device *device );
  * @return The last error message for the given device, or NULL if no error has
  * occurred on that device.
  *
- * The returned string must not be freed, might be statically allocated,
- * and is only valid as long as the device handle is open.
+ * The returned string must not be freed or modified, and is only valid as long
+ * as the device handle is open and no further error has occurred on it.
  */
 char* tempered_error( tempered_device *device );
 
@@ -175,7 +179,7 @@ bool tempered_get_humidity(
  * @param device The device to get the type name of.
  * @return The device path of the given device.
  *
- * The returned string must not be freed, might be statically allocated,
+ * The returned string must not be freed or modified,
  * and is only valid as long as the device handle is open.
  */
 char const * tempered_get_device_path( tempered_device *device );
@@ -184,7 +188,7 @@ char const * tempered_get_device_path( tempered_device *device );
  * @param device The device to get the type name of.
  * @return The type name of the given device, or NULL on error.
  *
- * The returned type name must not be freed, might be statically allocated,
+ * The returned type name must not be freed or modified,
  * and is only valid as long as the device handle is open.
  */
 char const * tempered_get_type_name( tempered_device *device );

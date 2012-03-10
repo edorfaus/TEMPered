@@ -36,11 +36,9 @@ bool temper_type_hid_1130_660c_open( tempered_device* device )
 	if ( !temper_type_hid_read_sensors( device ) )
 	{
 		temper_type_hid_close( device );
-		if ( device->error != NULL )
-		{
-			free( device->error );
-		}
-		device->error = "Failed to read the device ID from the device.";
+		tempered_set_error(
+			device, strdup( "Failed to read the device ID from the device." )
+		);
 		return false;
 	}
 	
@@ -48,7 +46,10 @@ bool temper_type_hid_1130_660c_open( tempered_device* device )
 	if ( device_data->data_length < 2 )
 	{
 		temper_type_hid_close( device );
-		device->error = "Data from the device did not include the device ID.";
+		tempered_set_error(
+			device,
+			strdup( "Data from the device did not include the device ID." )
+		);
 		return false;
 	}
 	unsigned char device_id = device_data->data[1];
@@ -66,7 +67,7 @@ bool temper_type_hid_1130_660c_open( tempered_device* device )
 	{
 		// Subtype was not found.
 		temper_type_hid_close( device );
-		device->error = "Unknown device subtype.";
+		tempered_set_error( device, strdup( "Unknown device subtype." ) );
 		return false;
 	}
 	
