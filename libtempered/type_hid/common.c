@@ -59,6 +59,7 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 		);
 		if ( type != NULL && !type->ignored )
 		{
+			#ifdef DEBUG
 			printf(
 				"Device %04hx:%04hx if %d rel %4hx | %s | %ls %ls\n",
 				info->vendor_id, info->product_id,
@@ -66,6 +67,7 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 				info->path,
 				info->manufacturer_string, info->product_string
 			);
+			#endif
 			struct tempered_device_list *next = malloc(
 				sizeof( struct tempered_device_list )
 			);
