@@ -63,7 +63,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 		}
 		return NULL;
 	}
-	temper_type * type = (temper_type *)list->internal_data;
+	struct temper_type * type = (struct temper_type *)list->internal_data;
 	if ( type->open == NULL )
 	{
 		if ( error != NULL )

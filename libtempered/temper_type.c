@@ -7,7 +7,7 @@
 #include "type_hid/1130_660c.h"
 
 // This is an array of known TEMPer types.
-temper_type known_temper_types[]={
+struct temper_type known_temper_types[]={
 	{
 		.name="TEMPer2HumiV1.x",
 		.ignored=true,
@@ -136,10 +136,10 @@ temper_type known_temper_types[]={
 };
 
 // Get the temper_type that matches the given USB device information
-temper_type* temper_type_find(
+struct temper_type* temper_type_find(
 	unsigned short vendor_id, unsigned short product_id, int interface_number
 ) {
-	temper_type *type;
+	struct temper_type *type;
 	for ( type = known_temper_types; type->name != NULL; type++ )
 	{
 		if (

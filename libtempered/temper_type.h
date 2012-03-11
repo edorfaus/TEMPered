@@ -9,7 +9,7 @@
  * information on it that is used to recognize it and to read the temperature
  * from its sensor.
  */
-typedef struct temper_type {
+struct temper_type {
 	
 	/** Name of device type, and end-of-list marker (this is NULL at EOL).
 	 */
@@ -59,11 +59,7 @@ typedef struct temper_type {
 	 */
 	bool (*get_humidity)( tempered_device*, int, float* );
 	
-} temper_type;
-
-/** This is the array of known types, terminated by an element with a NULL name.
- */
-extern temper_type known_temper_types[];
+};
 
 /** Find the temper_type struct that matches the given USB device information.
  * @param vendor_id The USB vendor ID to find a temper_type for.
@@ -72,7 +68,7 @@ extern temper_type known_temper_types[];
  * @return The matching type, or NULL if none was found.
  * Note that the returned type may have the ignored field set to true.
  */
-temper_type* temper_type_find(
+struct temper_type* temper_type_find(
 	unsigned short vendor_id, unsigned short product_id, int interface_number
 );
 
