@@ -83,7 +83,6 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 			
 			next->next = NULL;
 			next->path = strdup( info->path );
-			next->internal_data = type;
 			next->type_name = type->name;
 			next->vendor_id = info->vendor_id;
 			next->product_id = info->product_id;

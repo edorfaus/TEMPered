@@ -55,7 +55,7 @@ void tempered_free_device_list( struct tempered_device_list *list )
 /** Open a given device from the list. */
 tempered_device* tempered_open( struct tempered_device_list *list, char **error )
 {
-	if ( list == NULL || list->internal_data == NULL )
+	if ( list == NULL )
 	{
 		if ( error != NULL )
 		{
@@ -63,7 +63,17 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 		}
 		return NULL;
 	}
-	struct temper_type * type = (struct temper_type *)list->internal_data;
+	struct temper_type * type = temper_type_find(
+		list->vendor_id, list->product_id, list->interface_number
+	);
+	if ( type == NULL )
+	{
+		if ( error != NULL )
+		{
+			*error = strdup( "Invalid device given (type not found)." );
+		}
+		return NULL;
+	}
 	if ( type->open == NULL )
 	{
 		if ( error != NULL )

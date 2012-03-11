@@ -24,11 +24,6 @@ struct tempered_device_list {
 	 */
 	char *path;
 	
-	/** Internal data pointer.
-	 * @internal This is set to the temper_type.
-	 */
-	void *internal_data;
-	
 	/** Name of the device type.
 	 */
 	char *type_name;
