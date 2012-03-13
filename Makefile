@@ -33,7 +33,12 @@ LIB_OBJECTS=$(patsubst libtempered/%.c,build/%.o,$(LIB_SOURCES))
 
 PROGRAMS=$(patsubst %.c,%,$(wildcard utils/*.c))
 
-all: $(PROGRAMS)
+PROGRAMS_SHARED=$(patsubst %,%-shared,$(PROGRAMS))
+
+all: static
+
+static: $(PROGRAMS)
+shared: $(PROGRAMS_SHARED)
 
 lib: libtempered.a libtempered.so
 
@@ -55,7 +60,10 @@ libtempered.so: $(LIB_OBJECTS)
 $(PROGRAMS): %: %.c libtempered.a $(HIDAPI_LIB)
 	$(CC) -Ilibtempered $(CFLAGS) $^ $(LIBS) -o $@
 
-clean:
-	rm -rf build libtempered.a libtempered.so $(PROGRAMS)
+$(PROGRAMS_SHARED): %-shared: %.c libtempered.so $(HIDAPI_LIB)
+	$(CC) -Ilibtempered $(CFLAGS) $^ -L. -ltempered $(LIBS) -o $@
 
-.PHONY: all clean lib
+clean:
+	rm -rf build libtempered.a libtempered.so $(PROGRAMS) $(PROGRAMS_SHARED)
+
+.PHONY: all clean lib static shared
