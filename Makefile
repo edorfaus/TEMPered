@@ -28,6 +28,8 @@ PROGRAMS=$(patsubst %.c,%,$(wildcard utils/*.c))
 
 all: $(PROGRAMS)
 
+lib: libtempered.a libtempered.so
+
 $(HIDAPI_LIB):
 	$(error You must build HIDAPI before building this)
 
@@ -39,10 +41,13 @@ libtempered.a: $(LIB_OBJECTS)
 	ar rc $@ $^
 	ranlib $@
 
+libtempered.so: $(LIB_OBJECTS)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,$@.0 -o $@ $^
+
 $(PROGRAMS): %: %.c libtempered.a $(HIDAPI_LIB)
 	$(CC) -Ilibtempered $(CFLAGS) $^ $(LIBS) -o $@
 
 clean:
-	rm -rf build libtempered.a $(PROGRAMS)
+	rm -rf build libtempered.a libtempered.so $(PROGRAMS)
 
-.PHONY: all clean
+.PHONY: all clean lib

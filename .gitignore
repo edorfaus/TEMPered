@@ -1,6 +1,6 @@
 /utils/enumerate
 /utils/tempered
-/utils/dump-data
 /utils/hid-query
 /libtempered.a
+/libtempered.so
 /build
