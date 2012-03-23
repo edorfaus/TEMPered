@@ -25,12 +25,43 @@ void dump_data( char* name, unsigned char* data, int data_length )
 	printf( "\n" );
 }
 
+/** Read from the given device with the given timeout. */
+int read_from_device( hid_device *dev, int timeout )
+{
+	unsigned char read_data[DATA_MAX_LENGTH];
+	int size;
+	size = hid_read_timeout( dev, read_data, sizeof( read_data ), timeout );
+	if ( size < 0 )
+	{
+		fprintf(
+			stderr,
+			"Read of data from the device failed: %ls\n",
+			hid_error( dev )
+		);
+		return 7;
+	}
+	else if ( size == 0 )
+	{
+		return 8;
+	}
+	else
+	{
+		if ( size == sizeof( read_data ) )
+		{
+			printf(
+				"Warning: data buffer full, may have lost some data.\n\n"
+			);
+		}
+		dump_data( "Response from device", read_data, size );
+	}
+	return 0;
+}
+
 /** Query the given device with the given data. */
 int query_device(
 	struct hid_device_info *info, unsigned char *write_data, int write_length
 ) {
 	hid_device* dev;
-	unsigned char read_data[DATA_MAX_LENGTH];
 	int size;
 	
 	printf( "Device %s : %04hx:%04hx interface %d : %ls %ls\n\n",
@@ -59,30 +90,21 @@ int query_device(
 	}
 	else
 	{
-		size = hid_read_timeout( dev, read_data, sizeof( read_data ), 4000 );
-		if ( size < 0 )
-		{
-			fprintf(
-				stderr,
-				"Read of data from the device failed: %ls\n",
-				hid_error( dev )
-			);
-			ret = 7;
-		}
-		else if ( size == 0 )
+		ret = read_from_device( dev, 4000 );
+		if ( ret == 8 )
 		{
 			fprintf( stderr, "No data was read from the device (timeout).\n" );
-			ret = 8;
 		}
-		else
+		else if ( ret == 0 )
 		{
-			if ( size == sizeof( read_data ) )
+			while ( ret == 0 )
 			{
-				printf(
-					"Warning: data buffer full, may have lost some data.\n\n"
-				);
+				ret = read_from_device( dev, 200 );
 			}
-			dump_data( "Response from device", read_data, size );
+			if ( ret == 8 )
+			{
+				ret = 0;
+			}
 		}
 	}
 	hid_close( dev );
