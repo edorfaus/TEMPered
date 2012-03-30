@@ -4,6 +4,7 @@
 #include <hidapi.h>
 
 #include "common.h"
+#include "type-info.h"
 
 /** The struct that is stored in device->data for this type of device. */
 struct temper_type_hid_device_data
@@ -11,14 +12,14 @@ struct temper_type_hid_device_data
 	/** Handle for the HID device. */
 	hid_device *hid_dev;
 	
-	/** Length of data that has been read from the device. */
-	int data_length;
-	
-	/** The data that has been read from the device. */
-	unsigned char data[64];
-	
-	/** The HID device info for this device. */
-	struct temper_type_hid_data *dev_info;
+	/** Array of groups of data that has been read from the device. */
+	struct tempered_type_hid_query_result *group_data;
 };
+
+/** Perform a HID query on the given device. */
+bool temper_type_hid_query(
+	tempered_device* device, struct tempered_type_hid_query* query,
+	struct tempered_type_hid_query_result* result
+);
 
 #endif
