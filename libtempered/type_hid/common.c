@@ -303,62 +303,102 @@ bool temper_type_hid_query(
 	return true;
 }
 
+/** Get the group and sensor numbers for the given sensor ID. */
+static bool tempered__type_hid__get_sensor_location(
+	tempered_device* device, int sensor, int* group_num, int* sensor_num
+) {
+	struct temper_subtype_hid *subtype =
+		(struct temper_subtype_hid *) device->subtype;
+	
+	int group_id, sensor_id = 0;
+	for ( group_id = 0 ; group_id < subtype->sensor_group_count ; group_id++ )
+	{
+		struct tempered_type_hid_sensor_group * group =
+			&subtype->sensor_groups[group_id];
+		
+		if ( sensor_id + group->sensor_count <= sensor )
+		{
+			sensor_id += group->sensor_count;
+			continue;
+		}
+		
+		*group_num = group_id;
+		*sensor_num = sensor - sensor_id;
+		return true;
+	}
+	// The sensor ID is out of range despite the check in core.c
+	tempered_set_error(
+		device, strdup( "Sensor ID is out of range. This should never happen." )
+	);
+	return false;
+}
+
 bool temper_type_hid_get_temperature(
 	tempered_device* device, int sensor, float* tempC
 ) {
-/*
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
-	
-	struct temper_type_hid_data *info = device_data->dev_info;
-	
+	int group_id, sensor_id;
 	if (
-		device_data->data_length <= info->temperature_high_byte_offset ||
-		device_data->data_length <= info->temperature_low_byte_offset
-	)
+		!tempered__type_hid__get_sensor_location(
+			device, sensor, &group_id, &sensor_id
+		)
+	) {
+		return false;
+	}
+	
+	struct temper_subtype_hid *subtype =
+		(struct temper_subtype_hid *) device->subtype;
+	
+	struct tempered_type_hid_sensor *hid_sensor =
+		&subtype->sensor_groups[group_id].sensors[sensor_id];
+	
+	if ( hid_sensor->get_temperature == NULL )
 	{
 		tempered_set_error(
-			device, strdup( "Not enough data was read from the sensor." )
+			device, strdup( "This sensor cannot sense the temperature." )
 		);
 		return false;
 	}
-*/
-	return true;
+	
+	struct temper_type_hid_device_data *device_data =
+		(struct temper_type_hid_device_data *) device->data;
+	
+	struct tempered_type_hid_query_result *group_data =
+		&device_data->group_data[group_id];
+	
+	return hid_sensor->get_temperature( device, hid_sensor, group_data, tempC );
 }
 
 bool temper_type_hid_get_humidity(
 	tempered_device* device, int sensor, float* rel_hum
 ) {
-/*
+	int group_id, sensor_id;
+	if (
+		!tempered__type_hid__get_sensor_location(
+			device, sensor, &group_id, &sensor_id
+		)
+	) {
+		return false;
+	}
+	
+	struct temper_subtype_hid *subtype =
+		(struct temper_subtype_hid *) device->subtype;
+	
+	struct tempered_type_hid_sensor *hid_sensor =
+		&subtype->sensor_groups[group_id].sensors[sensor_id];
+	
+	if ( hid_sensor->get_humidity == NULL )
+	{
+		tempered_set_error(
+			device, strdup( "This sensor cannot sense the humidity." )
+		);
+		return false;
+	}
+	
 	struct temper_type_hid_device_data *device_data =
 		(struct temper_type_hid_device_data *) device->data;
 	
-	struct temper_type_hid_data *info = device_data->dev_info;
+	struct tempered_type_hid_query_result *group_data =
+		&device_data->group_data[group_id];
 	
-	if ( !info->has_humidity )
-	{
-		tempered_set_error(
-			device, strdup( "This device does not have a humidity sensor." )
-		);
-		return false;
-	}
-	
-	float tempC;
-	if ( !temper_type_hid_get_temperature( device, sensor, &tempC ) )
-	{
-		return false;
-	}
-	
-	if (
-		device_data->data_length <= info->humidity_high_byte_offset ||
-		device_data->data_length <= info->humidity_low_byte_offset
-	)
-	{
-		tempered_set_error(
-			device, strdup( "Not enough data was read from the sensor." )
-		);
-		return false;
-	}
-*/
-	return true;
+	return hid_sensor->get_humidity( device, hid_sensor, group_data, rel_hum );
 }
