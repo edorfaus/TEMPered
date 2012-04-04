@@ -82,8 +82,6 @@ struct temper_type known_temper_types[]={
 					.open = temper_type_hid_subtype_open,
 					.read_sensors = temper_type_hid_read_sensors,
 					.get_temperature = temper_type_hid_get_temperature,
-					// TODO: remove humidity method, it's only here for testing
-					.get_humidity = temper_type_hid_get_humidity
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
@@ -108,6 +106,7 @@ struct temper_type known_temper_types[]={
 					.name = "TEMPer2.2",
 					.open = temper_type_hid_subtype_open,
 					.read_sensors = temper_type_hid_read_sensors,
+					.get_sensor_count = temper_type_hid_get_sensor_count,
 					.get_temperature = temper_type_hid_get_temperature,
 				},
 				.sensor_group_count = 1,
@@ -165,8 +164,7 @@ struct temper_type known_temper_types[]={
 					.open = temper_type_hid_subtype_open,
 					.name = "HidTEMPer1 (experimental)",
 					.read_sensors = temper_type_hid_read_sensors,
-					.get_temperature = temper_type_hid_get_temperature,
-					.get_humidity = temper_type_hid_get_humidity
+					.get_temperature = temper_type_hid_get_temperature
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
@@ -191,8 +189,8 @@ struct temper_type known_temper_types[]={
 					.name = "HidTEMPer2 (experimental)",
 					.open = temper_type_hid_subtype_open,
 					.read_sensors = temper_type_hid_read_sensors,
-					.get_temperature = temper_type_hid_get_temperature,
-					.get_humidity = temper_type_hid_get_humidity
+					.get_sensor_count = temper_type_hid_get_sensor_count,
+					.get_temperature = temper_type_hid_get_temperature
 				},
 				.sensor_group_count = 2,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
@@ -261,6 +259,7 @@ struct temper_type known_temper_types[]={
 					.name = "HidTEMPerNTC (experimental)",
 					.open = temper_type_hid_subtype_open,
 					.read_sensors = temper_type_hid_read_sensors,
+					.get_sensor_count = temper_type_hid_get_sensor_count,
 					.get_temperature = temper_type_hid_get_temperature
 				},
 				.sensor_group_count = 2,
