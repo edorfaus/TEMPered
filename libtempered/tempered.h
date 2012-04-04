@@ -3,6 +3,12 @@
 
 #include <stdbool.h>
 
+/** This file contains the headers that comprise the public API of the TEMPered
+ * library. The functions and types given here are the only ones that should be
+ * used by the programs that use this library, as any others are considered
+ * internal implementation details and are subject to change without notice.
+ */
+
 
 /** No such sensor, or it doesn't support any of the types we know. */
 #define TEMPERED_SENSOR_TYPE_NONE        (0     )
@@ -14,6 +20,9 @@
 #define TEMPERED_SENSOR_TYPE_HUMIDITY    (1 << 1)
 
 
+/** This struct represents a linked list of enumerated TEMPer devices.
+ * @see tempered_enumerate()
+ */
 struct tempered_device_list {
 	/** Pointer to the next device in the list, or NULL if this is the last
 	 * device in the list.
@@ -42,6 +51,12 @@ struct tempered_device_list {
 };
 
 struct tempered_device_;
+
+/** This type represents an opened TEMPer device.
+ *
+ * This is an opaque type.
+ * @see tempered_open()
+ */
 typedef struct tempered_device_ tempered_device;
 
 /** Initialize the TEMPered library.
