@@ -347,6 +347,42 @@ static bool tempered__type_hid__get_sensor_location(
 	return false;
 }
 
+int temper_type_hid_get_sensor_type( tempered_device* device, int sensor )
+{
+	int group_id, sensor_id;
+	if (
+		!tempered__type_hid__get_sensor_location(
+			device, sensor, &group_id, &sensor_id
+		)
+	) {
+		return TEMPERED_SENSOR_TYPE_NONE;
+	}
+	
+	struct temper_subtype_hid *subtype =
+		(struct temper_subtype_hid *) device->subtype;
+	
+	struct tempered_type_hid_sensor *hid_sensor =
+		&subtype->sensor_groups[group_id].sensors[sensor_id];
+	
+	int type = 0;
+	
+	if (
+		subtype->base.get_temperature != NULL &&
+		hid_sensor->get_temperature != NULL
+	) {
+		type = type | TEMPERED_SENSOR_TYPE_TEMPERATURE;
+	}
+	
+	if (
+		subtype->base.get_humidity != NULL &&
+		hid_sensor->get_humidity != NULL
+	) {
+		type = type | TEMPERED_SENSOR_TYPE_HUMIDITY;
+	}
+	
+	return type;
+}
+
 bool temper_type_hid_get_temperature(
 	tempered_device* device, int sensor, float* tempC
 ) {
