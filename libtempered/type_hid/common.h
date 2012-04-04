@@ -27,6 +27,9 @@ bool temper_type_hid_get_subtype_id(
 	tempered_device* device, unsigned char* subtype_id
 );
 
+/** Method for getting the number of sensors that a HID device has. */
+int temper_type_hid_get_sensor_count( tempered_device* device );
+
 /** Method for reading the sensors on a HID device. */
 bool temper_type_hid_read_sensors( tempered_device* device );
 

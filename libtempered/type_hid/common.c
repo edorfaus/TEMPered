@@ -303,6 +303,20 @@ bool temper_type_hid_query(
 	return true;
 }
 
+int temper_type_hid_get_sensor_count( tempered_device* device )
+{
+	struct temper_subtype_hid *subtype =
+		(struct temper_subtype_hid *) device->subtype;
+	
+	int group_id, count = 0;
+	for ( group_id = 0 ; group_id < subtype->sensor_group_count ; group_id++ )
+	{
+		count += subtype->sensor_groups[group_id].sensor_count;
+	}
+	
+	return count;
+}
+
 /** Get the group and sensor numbers for the given sensor ID. */
 static bool tempered__type_hid__get_sensor_location(
 	tempered_device* device, int sensor, int* group_num, int* sensor_num
