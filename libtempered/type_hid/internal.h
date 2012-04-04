@@ -1,5 +1,5 @@
-#ifndef TEMPER_TYPE_HID_INTERNAL_H
-#define TEMPER_TYPE_HID_INTERNAL_H
+#ifndef TEMPERED__TYPE_HID__INTERNAL_H
+#define TEMPERED__TYPE_HID__INTERNAL_H
 
 #include <hidapi.h>
 
@@ -7,7 +7,7 @@
 #include "type-info.h"
 
 /** The struct that is stored in device->data for this type of device. */
-struct temper_type_hid_device_data
+struct tempered_type_hid_device_data
 {
 	/** Handle for the HID device. */
 	hid_device *hid_dev;
@@ -17,7 +17,7 @@ struct temper_type_hid_device_data
 };
 
 /** Perform a HID query on the given device. */
-bool temper_type_hid_query(
+bool tempered_type_hid_query(
 	tempered_device* device, struct tempered_type_hid_query* query,
 	struct tempered_type_hid_query_result* result
 );

@@ -23,24 +23,24 @@ struct temper_type known_temper_types[]={
 		.vendor_id=0x0c45,
 		.product_id=0x7402,
 		.interface_number=1,
-		.open = temper_type_hid_open,
-		.close = temper_type_hid_close,
+		.open = tempered_type_hid_open,
+		.close = tempered_type_hid_close,
 		.get_subtype_id = NULL,
 		.subtypes = (struct temper_subtype*[]){
 			(struct temper_subtype*)&(struct temper_subtype_hid){
 				.base = {
 					.name = "TEMPer2HumiV1.x",
-					.open = temper_type_hid_subtype_open,
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_temperature = temper_type_hid_get_temperature,
-					.get_humidity = temper_type_hid_get_humidity
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_temperature = tempered_type_hid_get_temperature,
+					.get_humidity = tempered_type_hid_get_humidity
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -69,9 +69,9 @@ struct temper_type known_temper_types[]={
 		.vendor_id=0x0c45,
 		.product_id=0x7401,
 		.interface_number=1,
-		.open = temper_type_hid_open,
-		.close = temper_type_hid_close,
-		.get_subtype_id = temper_type_hid_get_subtype_id,
+		.open = tempered_type_hid_open,
+		.close = tempered_type_hid_close,
+		.get_subtype_id = tempered_type_hid_get_subtype_id,
 		// TODO: find the id_query and offset for this type
 		.get_subtype_data = NULL,
 		.subtypes = (struct temper_subtype*[]){
@@ -79,16 +79,16 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 0, // TODO: find the ID
 					.name = "TEMPerV1.2",
-					.open = temper_type_hid_subtype_open,
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_temperature = temper_type_hid_get_temperature,
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_temperature = tempered_type_hid_get_temperature,
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -104,17 +104,17 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 0, // TODO: find the ID
 					.name = "TEMPer2.2",
-					.open = temper_type_hid_subtype_open,
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_sensor_count = temper_type_hid_get_sensor_count,
-					.get_temperature = temper_type_hid_get_temperature,
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_sensor_count = tempered_type_hid_get_sensor_count,
+					.get_temperature = tempered_type_hid_get_temperature,
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 2,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -145,9 +145,9 @@ struct temper_type known_temper_types[]={
 		.vendor_id=0x1130,
 		.product_id=0x660c,
 		.interface_number=1,
-		.open = temper_type_hid_open,
-		.close = temper_type_hid_close,
-		.get_subtype_id = temper_type_hid_get_subtype_id,
+		.open = tempered_type_hid_open,
+		.close = tempered_type_hid_close,
+		.get_subtype_id = tempered_type_hid_get_subtype_id,
 		.get_subtype_data = &(struct tempered_type_hid_subtype_data){
 			.id_offset = 2,
 			.query.length = 8,
@@ -161,17 +161,17 @@ struct temper_type known_temper_types[]={
 					.id = 0x58,
 					// TODO: use .open to initialize the high-resolution data
 					// (by sending 0x43 to the device)
-					.open = temper_type_hid_subtype_open,
+					.open = tempered_type_hid_subtype_open,
 					.name = "HidTEMPer1 (experimental)",
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_temperature = temper_type_hid_get_temperature
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_temperature = tempered_type_hid_get_temperature
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -187,17 +187,17 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 0x59,
 					.name = "HidTEMPer2 (experimental)",
-					.open = temper_type_hid_subtype_open,
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_sensor_count = temper_type_hid_get_sensor_count,
-					.get_temperature = temper_type_hid_get_temperature
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_sensor_count = tempered_type_hid_get_sensor_count,
+					.get_temperature = tempered_type_hid_get_temperature
 				},
 				.sensor_group_count = 2,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{ // Internal sensor
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -210,7 +210,7 @@ struct temper_type known_temper_types[]={
 					{ // External sensor
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 0x53, 0, 0, 0, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -227,17 +227,17 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 0x00, // TODO: find the ID
 					.name = "HidTEMPerHUM (experimental)",
-					.open = temper_type_hid_subtype_open,
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_temperature = temper_type_hid_get_temperature,
-					.get_humidity = temper_type_hid_get_humidity
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_temperature = tempered_type_hid_get_temperature,
+					.get_humidity = tempered_type_hid_get_humidity
 				},
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 0x48, 0, 0, 0, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -257,17 +257,17 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 0x5b,
 					.name = "HidTEMPerNTC (experimental)",
-					.open = temper_type_hid_subtype_open,
-					.read_sensors = temper_type_hid_read_sensors,
-					.get_sensor_count = temper_type_hid_get_sensor_count,
-					.get_temperature = temper_type_hid_get_temperature
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_sensor_count = tempered_type_hid_get_sensor_count,
+					.get_temperature = tempered_type_hid_get_temperature
 				},
 				.sensor_group_count = 2,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{ // Internal sensor
 						.query.length = 8,
 						.query.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 },
-						.read_sensors = temper_type_hid_read_sensor_group,
+						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
 							{
@@ -331,17 +331,17 @@ struct temper_subtype* temper_type_find_subtype(
 /** Initialize the TEMPer types. */
 bool temper_type_init( char **error )
 {
-	return temper_type_hid_init( error );
+	return tempered_type_hid_init( error );
 }
 
 /** Finalize the TEMPer types. */
 bool temper_type_exit( char **error )
 {
-	return temper_type_hid_exit( error );
+	return tempered_type_hid_exit( error );
 }
 
 /** Enumerate the known TEMPer devices. */
 struct tempered_device_list* temper_type_enumerate( char **error )
 {
-	return temper_type_hid_enumerate( error );
+	return tempered_type_hid_enumerate( error );
 }

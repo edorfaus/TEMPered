@@ -12,7 +12,7 @@
 #include "../tempered-internal.h"
 
 /** Initialize the HID TEMPer types. */
-bool temper_type_hid_init( char **error )
+bool tempered_type_hid_init( char **error )
 {
 	if ( hid_init() != 0 )
 	{
@@ -26,7 +26,7 @@ bool temper_type_hid_init( char **error )
 }
 
 /** Finalize the HID TEMPer types. */
-bool temper_type_hid_exit( char **error )
+bool tempered_type_hid_exit( char **error )
 {
 	if ( hid_exit() != 0 )
 	{
@@ -40,7 +40,7 @@ bool temper_type_hid_exit( char **error )
 }
 
 /** Enumerate the HID TEMPer devices. */
-struct tempered_device_list* temper_type_hid_enumerate( char **error )
+struct tempered_device_list* tempered_type_hid_enumerate( char **error )
 {
 	struct tempered_device_list *list = NULL, *current = NULL;
 	struct hid_device_info *devs, *info;
@@ -116,10 +116,10 @@ struct tempered_device_list* temper_type_hid_enumerate( char **error )
 	return list;
 }
 
-bool temper_type_hid_open( tempered_device* device )
+bool tempered_type_hid_open( tempered_device* device )
 {
-	struct temper_type_hid_device_data *device_data = malloc(
-		sizeof( struct temper_type_hid_device_data )
+	struct tempered_type_hid_device_data *device_data = malloc(
+		sizeof( struct tempered_type_hid_device_data )
 	);
 	if ( device_data == NULL )
 	{
@@ -140,10 +140,10 @@ bool temper_type_hid_open( tempered_device* device )
 	return true;
 }
 
-void temper_type_hid_close( tempered_device* device )
+void tempered_type_hid_close( tempered_device* device )
 {
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
+	struct tempered_type_hid_device_data *device_data =
+		(struct tempered_type_hid_device_data *) device->data;
 	hid_close( device_data->hid_dev );
 	if ( device_data->group_data != NULL )
 	{
@@ -152,10 +152,10 @@ void temper_type_hid_close( tempered_device* device )
 	free( device_data );
 }
 
-bool temper_type_hid_subtype_open( tempered_device* device )
+bool tempered_type_hid_subtype_open( tempered_device* device )
 {
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
+	struct tempered_type_hid_device_data *device_data =
+		(struct tempered_type_hid_device_data *) device->data;
 	
 	int group_count =
 		((struct temper_subtype_hid *) device->subtype)->sensor_group_count;
@@ -179,7 +179,7 @@ bool temper_type_hid_subtype_open( tempered_device* device )
 }
 
 /** Method for getting the subtype ID from HID devices. */
-bool temper_type_hid_get_subtype_id(
+bool tempered_type_hid_get_subtype_id(
 	tempered_device* device, unsigned char* subtype_id
 ) {
 	struct tempered_type_hid_subtype_data *subtype_data =
@@ -194,7 +194,7 @@ bool temper_type_hid_get_subtype_id(
 	
 	struct tempered_type_hid_query_result result;
 	
-	if ( !temper_type_hid_query( device, &subtype_data->query, &result ) )
+	if ( !tempered_type_hid_query( device, &subtype_data->query, &result ) )
 	{
 		return false;
 	}
@@ -212,13 +212,13 @@ bool temper_type_hid_get_subtype_id(
 	return true;
 }
 
-bool temper_type_hid_read_sensors( tempered_device* device )
+bool tempered_type_hid_read_sensors( tempered_device* device )
 {
 	struct temper_subtype_hid *subtype =
 		(struct temper_subtype_hid *) device->subtype;
 	
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
+	struct tempered_type_hid_device_data *device_data =
+		(struct tempered_type_hid_device_data *) device->data;
 	
 	int i;
 	for ( i = 0; i < subtype->sensor_group_count ; i++ )
@@ -237,20 +237,20 @@ bool temper_type_hid_read_sensors( tempered_device* device )
 	return true;
 }
 
-bool temper_type_hid_read_sensor_group(
+bool tempered_type_hid_read_sensor_group(
 	tempered_device* device, struct tempered_type_hid_sensor_group* group,
 	struct tempered_type_hid_query_result* group_data
 ) {
-	return temper_type_hid_query( device, &group->query, group_data );
+	return tempered_type_hid_query( device, &group->query, group_data );
 }
 
 
-bool temper_type_hid_query(
+bool tempered_type_hid_query(
 	tempered_device* device, struct tempered_type_hid_query* query,
 	struct tempered_type_hid_query_result* result
 ) {
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
+	struct tempered_type_hid_device_data *device_data =
+		(struct tempered_type_hid_device_data *) device->data;
 	
 	hid_device *hid_dev = device_data->hid_dev;
 	
@@ -303,7 +303,7 @@ bool temper_type_hid_query(
 	return true;
 }
 
-int temper_type_hid_get_sensor_count( tempered_device* device )
+int tempered_type_hid_get_sensor_count( tempered_device* device )
 {
 	struct temper_subtype_hid *subtype =
 		(struct temper_subtype_hid *) device->subtype;
@@ -347,7 +347,7 @@ static bool tempered__type_hid__get_sensor_location(
 	return false;
 }
 
-int temper_type_hid_get_sensor_type( tempered_device* device, int sensor )
+int tempered_type_hid_get_sensor_type( tempered_device* device, int sensor )
 {
 	int group_id, sensor_id;
 	if (
@@ -383,7 +383,7 @@ int temper_type_hid_get_sensor_type( tempered_device* device, int sensor )
 	return type;
 }
 
-bool temper_type_hid_get_temperature(
+bool tempered_type_hid_get_temperature(
 	tempered_device* device, int sensor, float* tempC
 ) {
 	int group_id, sensor_id;
@@ -409,8 +409,8 @@ bool temper_type_hid_get_temperature(
 		return false;
 	}
 	
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
+	struct tempered_type_hid_device_data *device_data =
+		(struct tempered_type_hid_device_data *) device->data;
 	
 	struct tempered_type_hid_query_result *group_data =
 		&device_data->group_data[group_id];
@@ -418,7 +418,7 @@ bool temper_type_hid_get_temperature(
 	return hid_sensor->get_temperature( device, hid_sensor, group_data, tempC );
 }
 
-bool temper_type_hid_get_humidity(
+bool tempered_type_hid_get_humidity(
 	tempered_device* device, int sensor, float* rel_hum
 ) {
 	int group_id, sensor_id;
@@ -444,8 +444,8 @@ bool temper_type_hid_get_humidity(
 		return false;
 	}
 	
-	struct temper_type_hid_device_data *device_data =
-		(struct temper_type_hid_device_data *) device->data;
+	struct tempered_type_hid_device_data *device_data =
+		(struct tempered_type_hid_device_data *) device->data;
 	
 	struct tempered_type_hid_query_result *group_data =
 		&device_data->group_data[group_id];
