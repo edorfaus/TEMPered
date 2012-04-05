@@ -16,6 +16,9 @@ struct tempered_device_ {
 	/** The type of temper this device is. */
 	struct temper_type const *type;
 	
+	/** The subtype of the temper type this device is. */
+	struct temper_subtype const *subtype;
+	
 	/** The path for this device. */
 	char *path;
 	

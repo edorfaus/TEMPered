@@ -23,7 +23,7 @@ intend to add support for devices acting like a serial port eventually.
 		It has been reported to work with Cray's pcsensor, with the external
 		sensor on offsets 5,4 and the internal on 3,2 just like TEMPerV1.2.
 		Hence, reading the internal sensor should already work, but the
-		external one won't, as the code is not yet ready for multiple sensors.
+		external one won't, as we don't know how to separate these subtypes.
 
 0c45:7402	WORKS PROBABLY
 	HID: TEMPer2HumiV1.x
@@ -53,9 +53,7 @@ intend to add support for devices acting like a serial port eventually.
 		I think this has two temperature sensors (internal and external), that
 		both use the FM75 way of calculating the temperature.
 		There's some experimental code in this project to read the temperature
-		of the internal sensor, which might work, but has not yet been tested.
-		The external sensor has not been defined in the temper type data,
-		because the code is not yet ready for devices with multiple sensors.
+		of the sensors, which might work, but has not yet been tested.
 	
 	0x??: HidTEMPerHUM	NEED INFO
 		I think this has one internal temperature and humidity sensor; not sure
@@ -76,8 +74,7 @@ intend to add support for devices acting like a serial port eventually.
 		The external sensor is completely different than the other known types,
 		and appears to require multiple reads and writing back the gain on the
 		fly, and a complex calculation that goes via volts and uses calibration
-		- so it is not yet supported, both because of the above, and because
-		the code is not yet ready for devices with multiple sensors.
+		- so it is not yet supported.
 
 ?:?	NOT YET
 	serial: TEMPer232
