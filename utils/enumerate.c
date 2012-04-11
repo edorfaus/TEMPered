@@ -8,7 +8,7 @@ void print_error( char *error )
 	free( error );
 }
 
-int main( int argc, char **argv )
+int main( void )
 {
 	char *error = NULL;
 	if ( !tempered_init( &error ) )

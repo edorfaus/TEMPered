@@ -1,9 +1,1 @@
-/utils/enumerate
-/utils/enumerate-shared
-/utils/tempered
-/utils/tempered-shared
-/utils/hid-query
-/utils/hid-query-shared
-/libtempered.a
-/libtempered.so
 /build

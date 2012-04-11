@@ -38,8 +38,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -86,8 +88,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -112,8 +116,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 1, 0x80, 0x33, 1, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 2,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -150,8 +156,10 @@ struct temper_type known_temper_types[]={
 		.get_subtype_id = tempered_type_hid_get_subtype_id,
 		.get_subtype_data = &(struct tempered_type_hid_subtype_data){
 			.id_offset = 2,
-			.query.length = 8,
-			.query.data = (unsigned char[]){ 0x52, 0, 0, 0, 0, 0, 0, 0 }
+			.query = {
+				.length = 8,
+				.data = (unsigned char[]){ 0x52, 0, 0, 0, 0, 0, 0, 0 }
+			}
 			// calibration is in offsets 2,3 for internal and 4,5 for external
 			// sensor, at least for some types - but I don't know how to use it
 		},
@@ -169,8 +177,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -195,8 +205,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 2,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{ // Internal sensor
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -208,8 +220,10 @@ struct temper_type known_temper_types[]={
 						}
 					},
 					{ // External sensor
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 0x53, 0, 0, 0, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 0x53, 0, 0, 0, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -235,8 +249,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 1,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 0x48, 0, 0, 0, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 0x48, 0, 0, 0, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -265,8 +281,10 @@ struct temper_type known_temper_types[]={
 				.sensor_group_count = 2,
 				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
 					{ // Internal sensor
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 0x54, 0, 0, 0, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
@@ -278,8 +296,10 @@ struct temper_type known_temper_types[]={
 						}
 					},
 					{ // External sensor
-						.query.length = 8,
-						.query.data = (unsigned char[]){ 0x41, 0, 0, 0, 0, 0, 0, 0 },
+						.query = {
+							.length = 8,
+							.data = (unsigned char[]){ 0x41, 0, 0, 0, 0, 0, 0, 0 }
+						},
 						.read_sensors = tempered_type_hid_read_sensor_group_ntc,
 						.sensor_count = 1,
 						.sensors = (struct tempered_type_hid_sensor[]){
