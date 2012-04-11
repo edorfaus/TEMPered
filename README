@@ -24,16 +24,25 @@ In addition to the library itself, this project includes these utilities:
     support for new devices or during debugging, and can be a little dangerous.
 
 
-To build the programs, first clone both this and HIDAPI[1], then build HIDAPI
-for your platform (I mostly use the Linux/hidraw implementation), then adjust
-the path in the Makefile (if necessary) to point to the built HIDAPI source,
-then run make.
+To build this project, you'll need to have a built copy of HIDAPI[1] on your
+system somewhere, and a working installation of the CMake[2] build system.
 
-For this to work properly, you will probably need to have installed the -dev
-packages for libudev and/or libusb first (for the right library versions).
+First, you either run make in the top-level directory, or create a build
+directory and run cmake yourself - then change into the build dir and run make.
 
 
 
 [1] The HIDAPI library can be found here: http://www.signal11.us/oss/hidapi/
 with source on GitHub here: https://github.com/signal11/hidapi
 This project uses features not available in version 0.6; use 0.7 or newer.
+
+If your system has a dev package for it, that should work, if not, you'll have
+to build it yourself (I suggest in a "hidapi" dir next to the "TEMPered" dir,
+as the autodetection will look for it there). This will probably require the
+-dev packages for libudev and/or libusb-1.0.
+
+
+[2] If CMake is not available in your distro's package system, it can be found
+here: http://www.cmake.org/
+This project is using version 2.8, but might be compatible with some earlier
+versions - 2.8 is what my system has, so I haven't tested anything older.
