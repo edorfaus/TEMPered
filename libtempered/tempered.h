@@ -1,6 +1,10 @@
 #ifndef TEMPERED_H
 #define TEMPERED_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 
 /** This file contains the headers that comprise the public API of the TEMPered
@@ -202,5 +206,9 @@ char const * tempered_get_device_path( tempered_device *device );
  * and is only valid as long as the device handle is open.
  */
 char const * tempered_get_type_name( tempered_device *device );
+
+#ifdef __cplusplus
+} // End of extern "C"
+#endif
 
 #endif
