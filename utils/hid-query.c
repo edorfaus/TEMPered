@@ -200,7 +200,7 @@ int show_help( char* error_message )
 	fprintf( stderr,
 "Usage: hid-query --enum|-e\n"
 " or  : hid-query --help|-h\n"
-" or  : hid-query <device> [-<datalen>] <byte>[ <byte>...]\n"
+" or  : hid-query <device> [-<datalen>] [-r <report-id>] <byte>[ <byte>...]\n"
 "\n"
 "The first form enumerates the HID devices that are attached to the system.\n"
 "The second form prints this help message to stderr.\n"
@@ -208,7 +208,11 @@ int show_help( char* error_message )
 "an answer, printing it to stdout. The optional datalen is an integer that\n"
 "specifies the number of bytes to write to the device (defaults to the higher\n"
 "of 8 and the number of bytes given, with the data zero-padded as necessary).\n"
-"The highest allowed data length is %i.\n",
+"The highest allowed data length is %i.\n"
+"The report ID will be the first byte written to the device, and if -r is not\n"
+"given will be defaulted to zero, as that is the value to use for devices\n"
+"that don't use numbered reports (such as the TEMPered devices) - so expect\n"
+"to see one more byte than you specified being written to the device.\n",
 		DATA_MAX_LENGTH
 	);
 	return 1;
@@ -244,7 +248,8 @@ int main( int argc, char** argv )
 	char *device = argv[1];
 	long data_length = 8;
 	int start = 2;
-	if ( argv[start][0] == '-' )
+	int has_report_id = 0;
+	if ( argv[start][0] == '-' && argv[start][1] != 'r' )
 	{
 		if ( argv[start][1] == '\0' )
 		{
@@ -259,7 +264,12 @@ int main( int argc, char** argv )
 		}
 		start++;
 	}
-	if ( argc - start < 1 )
+	if ( argc - start > 0 && strcmp( argv[start], "-r" ) == 0 )
+	{
+		has_report_id = 1;
+		start++;
+	}
+	if ( argc - start < 1 + has_report_id )
 	{
 		return show_help( "Too few parameters." );
 	}
@@ -273,8 +283,10 @@ int main( int argc, char** argv )
 			"Too many parameters - too much data to send at once."
 		);
 	}
+	data_length++;
 	unsigned char data[data_length];
 	memset( data, 0, data_length );
+	int offset = 1 - has_report_id;
 	for ( i = start ; i < argc ; i++ )
 	{
 		char *endptr;
@@ -287,7 +299,8 @@ int main( int argc, char** argv )
 			);
 			return show_help( NULL );
 		}
-		data[i-start] = (unsigned char) tmp;
+		data[offset] = (unsigned char) tmp;
+		offset++;
 	}
 	return query_device_by_path( device, data, data_length );
 }

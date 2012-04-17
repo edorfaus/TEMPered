@@ -13,7 +13,9 @@ struct tempered_type_hid_query
 	/** How many bytes of data should be written to the device. */
 	int length;
 	
-	/** The bytes of data that should be written to the device. */
+	/** The bytes of data that should be written to the device.
+	 * Note that the first byte of this should be the HID report ID.
+	 */
 	unsigned char *data;
 };
 
