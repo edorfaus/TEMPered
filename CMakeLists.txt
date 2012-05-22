@@ -29,7 +29,7 @@ find_path(HIDAPI_HEADER_DIR hidapi.h
 if (BUILD_HIDAPI_SHARED)
 	find_library(HIDAPI_LIB NAMES hidapi-hidraw hidapi-libusb
 		PATHS ../hidapi ../hidapi.git
-		PATH_SUFFIXES linux mac
+		PATH_SUFFIXES linux libusb mac
 		DOC "The location of the HIDAPI shared library file"
 	)
 	set(HIDAPI_STATIC_OBJECT)
@@ -38,12 +38,12 @@ else()
 	set(HIDAPI_LIB)
 	find_file(HIDAPI_OBJECT NAMES hid.o hid-libusb.o
 		PATHS ../hidapi ../hidapi.git
-		PATH_SUFFIXES linux mac
+		PATH_SUFFIXES linux libusb mac
 		DOC "The location of the HIDAPI static object file"
 	)
 	set(HIDAPI_STATIC_OBJECT ${HIDAPI_OBJECT})
 	find_package(PkgConfig REQUIRED)
-	if (HIDAPI_OBJECT MATCHES -libusb\\.o\$)
+	if (HIDAPI_OBJECT MATCHES \(-libusb|/libusb/hid\)\\.o\$)
 		pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 		set(HIDAPI_LINK_LIBS ${LIBUSB_LIBRARIES})
 	else()
