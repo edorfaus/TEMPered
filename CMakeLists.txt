@@ -5,6 +5,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE
 project(TEMPered C)
 
 include(CMakeDependentOption)
+include(GNUInstallDirs)
 
 option(BUILD_HIDAPI_SHARED "Build with shared version of HIDAPI" ON)
 
