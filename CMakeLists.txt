@@ -57,3 +57,4 @@ include_directories(${HIDAPI_HEADER_DIR})
 
 add_subdirectory(libtempered)
 add_subdirectory(utils)
+add_subdirectory(examples)
