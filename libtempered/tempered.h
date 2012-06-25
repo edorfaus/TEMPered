@@ -97,6 +97,7 @@ bool tempered_exit( char **error );
  * @return A pointer to the first device in the enumerated list, or NULL on
  * error. This list should be freed with tempered_free_device_list when you
  * are done with it.
+ * If no devices were found, NULL is returned and the error remains unset.
  */
 struct tempered_device_list* tempered_enumerate( char **error );
 

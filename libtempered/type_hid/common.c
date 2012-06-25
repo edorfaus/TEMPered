@@ -47,6 +47,8 @@ struct tempered_device_list* tempered_type_hid_enumerate( char **error )
 	devs = hid_enumerate( 0, 0 );
 	if ( devs == NULL )
 	{
+		// No HID devices were found. We unfortunately cannot know if this was
+		// because of an error or because there simply aren't any present.
 		if ( error != NULL )
 		{
 			*error = strdup( "No HID devices were found." );
