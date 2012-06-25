@@ -23,6 +23,9 @@ In addition to the library itself, this project includes these utilities:
     prints the returned result as hex bytes. This is mostly useful when adding
     support for new devices or during debugging, and can be a little dangerous.
 
+There are also some examples for how to use the library in the examples
+directory, for those who want or need to write their own custom program.
+
 
 To build this project, you'll need to have a built copy of HIDAPI[1] on your
 system somewhere, and a working installation of the CMake[2] build system.
