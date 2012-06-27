@@ -18,5 +18,5 @@ if (BUILD_STATIC_LIB)
 	set_target_properties(tempered-static PROPERTIES
 		OUTPUT_NAME tempered
 	)
-	install(TARGETS tempered-static LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	install(TARGETS tempered-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
