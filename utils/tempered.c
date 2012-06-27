@@ -1,29 +1,134 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 #include <tempered.h>
+#include <getopt.h>
+#include <tempered-util.h>
 
-/** Calculate the dew point for the given temperature and relative humidity. */
-double get_dew_point( float tempC, float rel_hum )
+struct my_options {
+	bool enumerate;
+	struct tempered_util__temp_scale const * temp_scale;
+	char ** devices;
+};
+
+void free_options( struct my_options *options )
 {
-	// This is based on the Sensirion SHT1x datasheet, with some extra reading
-	// on Wikipedia.
-	double Tn = 243.12;
-	double m = 17.62;
-	if ( tempC < 0 )
+	// Entries of options->devices are straight from argv, so don't free() them.
+	free( options->devices );
+	// options->temp_scale is not allocated on the heap.
+	free( options );
+}
+
+void show_help()
+{
+	printf(
+"Usage: tempered [options] [device-path...]\n"
+"\n"
+"Known options:\n"
+"    -h\n"
+"    --help                 Show this help text\n"
+"    -e\n"
+"    --enumerate            Enumerate the found devices without reading them.\n"
+"    -s <scale>\n"
+"    --scale <scale>        Set the temperature scale to show measurements in.\n"
+"                           The <scale> can be the name or symbol of the scale,\n"
+"                           or a unique prefix of the name.\n"
+"                           Known scales: "
+	);
+	int pos = 14; // strlen( "Known scales: " );
+	bool need_comma = false;
+	struct tempered_util__temp_scale const * cur;
+	for ( cur = tempered_util__known_temp_scales ; cur->name != NULL ; cur++ )
 	{
-		Tn = 272.62;
-		m = 22.46;
+		int len = strlen( cur->name );
+		if ( pos + len + 1 > 50 ) // 50 is the width of the text area
+		{
+			printf(
+				"%s\n                           ",
+				( need_comma ? "," : "" )
+			);
+			need_comma = false;
+			pos = 0;
+		}
+		printf( "%s%s", ( need_comma ? ", " : "" ), cur->name );
+		pos += len + ( need_comma ? 2 : 0 );
+		need_comma = true;
 	}
-	double gamma = log( rel_hum / 100 ) + m * tempC / ( Tn + tempC );
-	double dew_point = Tn * gamma / ( m - gamma );
-	return dew_point;
+	printf( "\n" );
+}
+
+struct my_options* parse_options( int argc, char *argv[] )
+{
+	struct my_options options = {
+		.enumerate = false,
+		.temp_scale = NULL,
+		.devices = NULL,
+	};
+	char *temp_scale = "Celsius";
+	struct option const long_options[] = {
+		{ "help", no_argument, NULL, 'h' },
+		{ "enumerate", no_argument, NULL, 'e' },
+		{ "scale", required_argument, NULL, 's' },
+		{ NULL, 0, NULL, 0 }
+	};
+	char const * const short_options = "hes:";
+	while ( true )
+	{
+		int opt = getopt_long( argc, argv, short_options, long_options, NULL );
+		if ( opt == -1 )
+		{
+			break;
+		}
+		switch ( opt )
+		{
+			case 0:// This should never happen since all options have flag==NULL
+			default:
+			{
+				fprintf( stderr, "Error: invalid option found." );
+				return NULL;
+			} break;
+			case '?':
+			{
+				// getopt_long has already printed an error message.
+				return NULL;
+			} break;
+			case 'h':
+			{
+				show_help();
+				return NULL;
+			} break;
+			case 'e':
+			{
+				options.enumerate = true;
+			} break;
+			case 's':
+			{
+				temp_scale = optarg;
+			} break;
+		}
+	}
+	options.temp_scale = tempered_util__find_temperature_scale( temp_scale );
+	if ( options.temp_scale == NULL )
+	{
+		fprintf( stderr, "Temperature scale not found: %s\n", temp_scale );
+		return NULL;
+	}
+	if ( optind < argc )
+	{
+		int count = argc - optind;
+		char **devices = calloc( count + 1, sizeof( char* ) );
+		memcpy( devices, &(argv[optind]), count * sizeof( char* ) );
+		options.devices = devices;
+	}
+	struct my_options * heap_options = malloc( sizeof( struct my_options ) );
+	memcpy( heap_options, &options, sizeof( struct my_options ) );
+	return heap_options;
 }
 
 /** Get and print the sensor values for a given device and sensor. */
-void print_device_sensor( tempered_device *device, int sensor )
-{
+void print_device_sensor(
+	tempered_device *device, int sensor, struct my_options *options
+) {
 	float tempC, rel_hum;
 	int type = tempered_get_sensor_type( device, sensor );
 	if ( type & TEMPERED_SENSOR_TYPE_TEMPERATURE )
@@ -55,19 +160,26 @@ void print_device_sensor( tempered_device *device, int sensor )
 		( type & TEMPERED_SENSOR_TYPE_HUMIDITY )
 	) {
 		printf(
-			"%s %i: temperature %.2f°C"
+			"%s %i: temperature %.2f %s"
 				", relative humidity %.1f%%"
-				", dew point %.1f°C\n",
+				", dew point %.1f %s\n",
 			tempered_get_device_path( device ), sensor,
-			tempC, rel_hum, get_dew_point( tempC, rel_hum )
+			options->temp_scale->from_celsius( tempC ),
+			options->temp_scale->symbol,
+			rel_hum,
+			options->temp_scale->from_celsius(
+				tempered_util__get_dew_point( tempC, rel_hum )
+			),
+			options->temp_scale->symbol
 		);
 	}
 	else if ( type & TEMPERED_SENSOR_TYPE_TEMPERATURE )
 	{
 		printf(
-			"%s %i: temperature %.2f°C\n",
+			"%s %i: temperature %.2f %s\n",
 			tempered_get_device_path( device ), sensor,
-			tempC
+			options->temp_scale->from_celsius( tempC ),
+			options->temp_scale->symbol
 		);
 	}
 	else if ( type & TEMPERED_SENSOR_TYPE_HUMIDITY )
@@ -88,8 +200,17 @@ void print_device_sensor( tempered_device *device, int sensor )
 }
 
 /** Print the sensor values for a given device. */
-void print_device( struct tempered_device_list *dev )
-{
+void print_device(
+	struct tempered_device_list *dev, struct my_options *options
+) {
+	if ( options->enumerate )
+	{
+		printf(
+			"%s : %s (USB IDs %04X:%04X)\n",
+			dev->path, dev->type_name, dev->vendor_id, dev->product_id
+		);
+		return;
+	}
 	char *error = NULL;
 	tempered_device *device = tempered_open( dev, &error );
 	if ( device == NULL )
@@ -114,19 +235,25 @@ void print_device( struct tempered_device_list *dev )
 		int sensor, sensors = tempered_get_sensor_count( device );
 		for ( sensor = 0; sensor < sensors; sensor++ )
 		{
-			print_device_sensor( device, sensor );
+			print_device_sensor( device, sensor, options );
 		}
 	}
 	tempered_close( device );
 }
 
-int main( int argc, char **argv )
+int main( int argc, char *argv[] )
 {
+	struct my_options *options = parse_options( argc, argv );
+	if ( options == NULL )
+	{
+		return 1;
+	}
 	char *error = NULL;
 	if ( !tempered_init( &error ) )
 	{
 		fprintf( stderr, "Failed to initialize libtempered: %s\n", error );
 		free( error );
+		free_options( options );
 		return 1;
 	}
 	
@@ -138,20 +265,20 @@ int main( int argc, char **argv )
 	}
 	else
 	{
-		if ( argc > 1 )
+		if ( options->devices != NULL )
 		{
 			// We have parameters, so only print those devices that are given.
 			int i;
-			for ( i = 1; i < argc ; i++ )
+			for ( i = 0; options->devices[i] != NULL ; i++ )
 			{
 				bool found = false;
 				struct tempered_device_list *dev;
 				for ( dev = list ; dev != NULL ; dev = dev->next )
 				{
-					if ( strcmp( dev->path, argv[i] ) == 0 )
+					if ( strcmp( dev->path, options->devices[i] ) == 0 )
 					{
 						found = true;
-						print_device( dev );
+						print_device( dev, options );
 						break;
 					}
 				}
@@ -159,7 +286,7 @@ int main( int argc, char **argv )
 				{
 					fprintf(
 						stderr, "%s: TEMPered device not found or ignored.\n",
-						argv[i]
+						options->devices[i]
 					);
 				}
 			}
@@ -170,7 +297,7 @@ int main( int argc, char **argv )
 			struct tempered_device_list *dev;
 			for ( dev = list ; dev != NULL ; dev = dev->next )
 			{
-				print_device( dev );
+				print_device( dev, options );
 			}
 		}
 		tempered_free_device_list( list );
@@ -180,6 +307,7 @@ int main( int argc, char **argv )
 	{
 		fprintf( stderr, "%s\n", error );
 		free( error );
+		free_options( options );
 		return 1;
 	}
 	return 0;
