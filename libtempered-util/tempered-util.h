@@ -1,6 +1,8 @@
 #ifndef TEMPERED_UTIL_H
 #define TEMPERED_UTIL_H
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -45,6 +47,41 @@ struct tempered_util__temp_scale const * tempered_util__find_temperature_scale(
 float tempered_util__get_dew_point( float tempC, float rel_hum );
 
 /* dew-point.c end */
+
+/* calibration.c start */
+
+/** Parse a calibration string into an array of floats.
+ *
+ * For convenience, if the given string only contains one value, the second is
+ * defaulted to 1 so that the calibration doesn't end up ignoring the sensor.
+ * @param string The string to parse. This should be a colon-separated list of
+ * floats with finite numeric values.
+ * @param found_count A pointer to an int where we store the count of values.
+ * @param print_errors Whether or not to print error messages to stderr.
+ * @return The array of floats (the size is returned in found_count), or NULL
+ * on error.
+ */
+float* tempered_util__parse_calibration_string(
+	char const * string, int *found_count, bool print_errors
+);
+
+/** Calibrate a value based on a power formula using the given factors.
+ *
+ * This will basically calculate the formula f0 + f1 * v + f2 * v^2 + ...
+ * where v is the given base value and f0, f1 etc. are the given factors.
+ *
+ * Hence, the given number of factors should be at least 2, or the returned
+ * value will not be based on the given base value at all.
+ * @param base_value The base value to be calibrated.
+ * @param factor_count The number of factors in the factors parameter.
+ * @param factors The array of factors to be applied in the calibration.
+ * @return The calibrated value.
+ */
+float tempered_util__calibrate_value(
+	float base_value, int factor_count, float factors[]
+);
+
+/* calibration.c end */
 
 #ifdef __cplusplus
 }

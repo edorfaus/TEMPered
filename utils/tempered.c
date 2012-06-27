@@ -8,11 +8,14 @@
 struct my_options {
 	bool enumerate;
 	struct tempered_util__temp_scale const * temp_scale;
+	int calibration_count;
+	float * calibration_values;
 	char ** devices;
 };
 
 void free_options( struct my_options *options )
 {
+	free( options->calibration_values );
 	// Entries of options->devices are straight from argv, so don't free() them.
 	free( options->devices );
 	// options->temp_scale is not allocated on the heap.
@@ -54,7 +57,14 @@ void show_help()
 		pos += len + ( need_comma ? 2 : 0 );
 		need_comma = true;
 	}
-	printf( "\n" );
+	printf( "\n"
+"    -c <cal>\n"
+"    --calibrate-temp <cal> Calibrate the measured temperature using the given\n"
+"                           calibration parameters. <cal> is a colon-separated\n"
+"                           list of floats, where each one given represents the\n"
+"                           factor for that power of the measured temperature,\n"
+"                           starting at power zero. ( a+b*T+c*T^2+d*T^3 ... )\n"
+	);
 }
 
 struct my_options* parse_options( int argc, char *argv[] )
@@ -62,16 +72,19 @@ struct my_options* parse_options( int argc, char *argv[] )
 	struct my_options options = {
 		.enumerate = false,
 		.temp_scale = NULL,
+		.calibration_count = 0,
+		.calibration_values = NULL,
 		.devices = NULL,
 	};
-	char *temp_scale = "Celsius";
+	char *temp_scale = "Celsius", *calibration_string = NULL;
 	struct option const long_options[] = {
 		{ "help", no_argument, NULL, 'h' },
 		{ "enumerate", no_argument, NULL, 'e' },
 		{ "scale", required_argument, NULL, 's' },
+		{ "calibrate-temp", required_argument, NULL, 'c' },
 		{ NULL, 0, NULL, 0 }
 	};
-	char const * const short_options = "hes:";
+	char const * const short_options = "hes:c:";
 	while ( true )
 	{
 		int opt = getopt_long( argc, argv, short_options, long_options, NULL );
@@ -105,6 +118,10 @@ struct my_options* parse_options( int argc, char *argv[] )
 			{
 				temp_scale = optarg;
 			} break;
+			case 'c':
+			{
+				calibration_string = optarg;
+			} break;
 		}
 	}
 	options.temp_scale = tempered_util__find_temperature_scale( temp_scale );
@@ -112,6 +129,17 @@ struct my_options* parse_options( int argc, char *argv[] )
 	{
 		fprintf( stderr, "Temperature scale not found: %s\n", temp_scale );
 		return NULL;
+	}
+	if ( calibration_string != NULL )
+	{
+		options.calibration_values = tempered_util__parse_calibration_string(
+			calibration_string, &(options.calibration_count), true
+		);
+		if ( options.calibration_values == NULL )
+		{
+			// It has already printed an error message.
+			return NULL;
+		}
 	}
 	if ( optind < argc )
 	{
@@ -141,6 +169,12 @@ void print_device_sensor(
 				tempered_error( device )
 			);
 			type &= ~TEMPERED_SENSOR_TYPE_TEMPERATURE;
+		}
+		else if ( options->calibration_values != NULL )
+		{
+			tempC = tempered_util__calibrate_value(
+				tempC, options->calibration_count, options->calibration_values
+			);
 		}
 	}
 	if ( type & TEMPERED_SENSOR_TYPE_HUMIDITY )
