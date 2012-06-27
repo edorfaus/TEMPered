@@ -2,25 +2,25 @@
 #include <stdio.h>
 #include <tempered.h>
 
-void print_error( char *error )
-{
-	fprintf( stderr, "%s\n", error );
-	free( error );
-}
+/**
+This example shows how to enumerate the attached devices.
+*/
 
 int main( void )
 {
 	char *error = NULL;
 	if ( !tempered_init( &error ) )
 	{
-		print_error( error );
+		fprintf( stderr, "%s\n", error );
+		free( error );
 		return 1;
 	}
 	
 	struct tempered_device_list *list = tempered_enumerate( &error );
 	if ( list == NULL )
 	{
-		print_error( error );
+		fprintf( stderr, "%s\n", error );
+		free( error );
 	}
 	else
 	{
@@ -41,7 +41,8 @@ int main( void )
 	
 	if ( !tempered_exit( &error ) )
 	{
-		print_error( error );
+		fprintf( stderr, "%s\n", error );
+		free( error );
 		return 1;
 	}
 	return 0;

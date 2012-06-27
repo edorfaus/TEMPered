@@ -8,6 +8,9 @@ else()
 	set(TEMPERED_LIB tempered-static)
 endif()
 
+add_executable(enumerate enumerate.c ${HIDAPI_STATIC_OBJECT})
+target_link_libraries(enumerate ${TEMPERED_LIB} ${HIDAPI_LINK_LIBS})
+
 add_executable(read-all read-all.c ${HIDAPI_STATIC_OBJECT})
 target_link_libraries(read-all ${TEMPERED_LIB} ${HIDAPI_LINK_LIBS})
 

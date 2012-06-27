@@ -24,7 +24,4 @@ target_link_libraries(tempered-exe
 	${TEMPERED_LIB} ${TEMPERED_UTIL_LIB} ${HIDAPI_LINK_LIBS}
 )
 
-add_executable(enumerate enumerate.c ${HIDAPI_STATIC_OBJECT})
-target_link_libraries(enumerate ${TEMPERED_LIB} ${HIDAPI_LINK_LIBS})
-
-install(TARGETS hid-query tempered-exe enumerate DESTINATION bin)
+install(TARGETS hid-query tempered-exe DESTINATION bin)
