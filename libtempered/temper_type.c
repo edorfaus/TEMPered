@@ -61,25 +61,33 @@ struct temper_type known_temper_types[]={
 		}
 	},
 	{
-		.name="TEMPerV1.2 or TEMPer2.2",
+		.name="TEMPerV1.2 or TEMPer2V1.3",
 		.vendor_id=0x0c45,
 		.product_id=0x7401,
 		.interface_number=0
 	},
 	{
-		.name="TEMPerV1.2 or TEMPer2.2",
+		.name="TEMPerV1.2 or TEMPer2V1.3",
 		.vendor_id=0x0c45,
 		.product_id=0x7401,
 		.interface_number=1,
 		.open = tempered_type_hid_open,
 		.close = tempered_type_hid_close,
 		.get_subtype_id = tempered_type_hid_get_subtype_id,
-		// TODO: find the id_query and offset for this type
-		.get_subtype_data = NULL,
+		.get_subtype_data =  &(struct tempered_type_hid_subtype_data){
+			.id_offset = 1,
+			.query = {
+				.length = 9,
+				.data = (unsigned char[]){ 0, 1, 0x82, 0x77, 1, 0, 0, 0, 0 }
+			}
+			// Technically I think offset 1 says how many bytes of data follow,
+			// but it is 1 for TEMPer and 2 for TEMPer2, so it's usable as ID.
+			// TODO: we may want to use the 82 FF query for initialization.
+		},
 		.subtypes = (struct temper_subtype*[]){
 			(struct temper_subtype*)&(struct temper_subtype_hid){
 				.base = {
-					.id = 0, // TODO: find the ID
+					.id = 1,
 					.name = "TEMPerV1.2",
 					.open = tempered_type_hid_subtype_open,
 					.read_sensors = tempered_type_hid_read_sensors,
@@ -106,8 +114,8 @@ struct temper_type known_temper_types[]={
 			},
 			(struct temper_subtype*)&(struct temper_subtype_hid){
 				.base = {
-					.id = 0, // TODO: find the ID
-					.name = "TEMPer2.2",
+					.id = 2,
+					.name = "TEMPer2V1.3",
 					.open = tempered_type_hid_subtype_open,
 					.read_sensors = tempered_type_hid_read_sensors,
 					.get_sensor_count = tempered_type_hid_get_sensor_count,
