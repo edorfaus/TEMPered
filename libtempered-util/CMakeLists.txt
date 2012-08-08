@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 file(GLOB_RECURSE libtempered_util_FILES *.[ch])
 
-install(FILES tempered-util.h DESTINATION include)
+if (DEFINED CMAKE_INSTALL_INCLUDEDIR)
+	install(FILES tempered-util.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endif()
 
 if (BUILD_SHARED_LIB)
 	add_library(tempered-util-shared SHARED ${libtempered_util_FILES})
@@ -11,7 +13,12 @@ if (BUILD_SHARED_LIB)
 		SOVERSION 0
 	)
 	target_link_libraries(tempered-util-shared m)
-	install(TARGETS tempered-util-shared LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	if (DEFINED CMAKE_INSTALL_LIBDIR)
+		install(
+			TARGETS tempered-util-shared
+			LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		)
+	endif()
 endif()
 
 if (BUILD_STATIC_LIB)
@@ -20,5 +27,10 @@ if (BUILD_STATIC_LIB)
 		OUTPUT_NAME tempered-util
 	)
 	target_link_libraries(tempered-util-static m)
-	install(TARGETS tempered-util-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+	if (DEFINED CMAKE_INSTALL_LIBDIR)
+		install(
+			TARGETS tempered-util-static
+			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		)
+	endif()
 endif()

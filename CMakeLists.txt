@@ -5,7 +5,17 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE
 project(TEMPered C)
 
 include(CMakeDependentOption)
-include(GNUInstallDirs)
+include(GNUInstallDirs OPTIONAL)
+
+if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
+	message(WARNING
+		"The GNUInstallDirs module is missing; 'make install' will not work."
+		"\nHint: GNUInstallDirs comes standard with CMake 2.8.5 and above."
+	)
+	# If you need to use an earlier version of CMake, simply copy the
+	# GNUInstallDirs.cmake file from a later version, and place it in this
+	# directory with the name GNUInstallDirs (without the extension).
+endif()
 
 option(BUILD_HIDAPI_SHARED "Build with shared version of HIDAPI" ON)
 

@@ -24,4 +24,6 @@ target_link_libraries(tempered-exe
 	${TEMPERED_LIB} ${TEMPERED_UTIL_LIB} ${HIDAPI_LINK_LIBS}
 )
 
-install(TARGETS hid-query tempered-exe DESTINATION bin)
+if (DEFINED CMAKE_INSTALL_BINDIR)
+	install(TARGETS hid-query tempered-exe DESTINATION ${CMAKE_INSTALL_BINDIR})
+endif()
