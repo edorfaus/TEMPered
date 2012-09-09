@@ -145,6 +145,44 @@ struct temper_type known_temper_types[]={
 					}
 				}
 			},
+			(struct temper_subtype*)&(struct temper_subtype_hid){
+				.base = {
+					.id = 3,
+					.name = "TEMPerNTC1.0",
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_sensor_count = tempered_type_hid_get_sensor_count,
+					.get_temperature = tempered_type_hid_get_temperature,
+				},
+				.sensor_group_count = 1,
+				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
+					{
+						.query = {
+							.length = 9,
+							.data = (unsigned char[]){ 0, 1, 0x80, 0x33, 1, 0, 0, 0, 0 }
+						},
+						.read_sensors = tempered_type_hid_read_sensor_group,
+						.sensor_count = 3,
+						.sensors = (struct tempered_type_hid_sensor[]){
+							{
+								.get_temperature = tempered_type_hid_get_temperature_fm75,
+								.temperature_high_byte_offset = 2,
+								.temperature_low_byte_offset = 3
+							},
+							{
+								.get_temperature = tempered_type_hid_get_temperature_fm75,
+								.temperature_high_byte_offset = 4,
+								.temperature_low_byte_offset = 5
+							},
+							{
+								.get_temperature = tempered_type_hid_get_temperature_fm75,
+								.temperature_high_byte_offset = 6,
+								.temperature_low_byte_offset = 7
+							}
+						}
+					}
+				}
+			},
 			NULL // List terminator for subtypes
 		}
 	},
