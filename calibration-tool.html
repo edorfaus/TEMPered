@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>TEMPered calibration tool</title>
+<style type="text/css">
+.calibration, .calibration *
+{
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+}
+.calibration > div > label
+{
+	display: inline-block;
+	width: 50%;
+	text-align: center;
+}
+.calibration > div > input
+{
+	width:50%;
+}
+.calibration > div.invalid
+{
+	background-color: #FF0000;
+}
+</style>
+</head>
+<body>
+
+<h1>Calibration tool</h1>
+
+<p>
+For this tool, input the actual temperature of the reference material (e.g. 100 for boiling water) in the "Actual temperature" column, and input what the sensor said at that temperature in the "Measured temperature" column on the same line.
+</p>
+<p>
+You only need to input data for as many measurements as you have; the remaining lines can be left empty.
+</p>
+<p>
+Below the inputs, you'll be given the parameters to give to tempered to have it <a href="https://github.com/edorfaus/TEMPered/wiki/Calibration">calibrate</a> this sensor's measurements and print the calculated actual temperatures.
+</p>
+<p>
+This tool uses the polynomial interpolation method, as described on the <a href="https://github.com/edorfaus/TEMPered/wiki/CalibrationExampleDerivation">example derivation page</a> in the wiki, with all its limitations. However, the polynomials the tool supports have a low enough order that it should work well enough for most cases.
+</p>
+
+<hr/>
+
+<div id="calibration"></div>
+<script type="text/javascript" src="calibration-tool.js"></script>
+<script type="text/javascript">
+CalibrationTool.create( document.getElementById('calibration') );
+</script>
+<noscript>
+This tool requires JavaScript.
+</noscript>
+
+</body>
+</html>
