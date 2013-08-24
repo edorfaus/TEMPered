@@ -39,6 +39,23 @@ struct tempered_type_hid_subtype_data
 	int id_offset;
 };
 
+/** This struct stores the data used to get the subtype ID for the device when
+ * the device responds with a subtype string instead of a numeric ID.
+ */
+struct tempered_type_hid_subtype_from_string_data
+{
+	/** The query to send to the device to get the subtype string back. */
+	struct tempered_type_hid_query query;
+	
+	/** The number of responses to read to get the complete subtype string. */
+	int response_count;
+	
+	/** The strings that correspond to each subtype, as a NULL-terminated list.
+	 * The offset into this list is used as the subtype ID.
+	 */
+	char **subtype_strings;
+};
+
 /** This struct represents a single sensor from a sensor group. */
 struct tempered_type_hid_sensor
 {

@@ -25,10 +25,23 @@ struct temper_type known_temper_types[]={
 		.interface_number=1,
 		.open = tempered_type_hid_open,
 		.close = tempered_type_hid_close,
-		.get_subtype_id = NULL,
+		.get_subtype_id = tempered_type_hid_get_subtype_id_from_string,
+		.get_subtype_data = &(struct tempered_type_hid_subtype_from_string_data)
+		{
+			.query = {
+				.length = 9,
+				.data = (unsigned char[]){ 0, 1, 0x86, 0xFF, 1, 0, 0, 0, 0 }
+			},
+			.response_count = 2,
+			.subtype_strings = (char *[]){
+				"TEMPerHumV1.0rHu",
+				NULL
+			}
+		},
 		.subtypes = (struct temper_subtype*[]){
 			(struct temper_subtype*)&(struct temper_subtype_hid){
 				.base = {
+					.id = 0,
 					.name = "TEMPer2HumiV1.x",
 					.open = tempered_type_hid_subtype_open,
 					.read_sensors = tempered_type_hid_read_sensors,

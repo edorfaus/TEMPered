@@ -214,6 +214,84 @@ bool tempered_type_hid_get_subtype_id(
 	return true;
 }
 
+/** Method for getting the subtype ID from HID devices that use string IDs. */
+bool tempered_type_hid_get_subtype_id_from_string(
+	tempered_device* device, unsigned char* subtype_id
+) {
+	struct tempered_type_hid_subtype_from_string_data *subtype_data =
+		(struct tempered_type_hid_subtype_from_string_data*)
+			device->type->get_subtype_data;
+	
+	if ( subtype_data == NULL )
+	{
+		// We don't have the necessary data, so pretend we got subtype 0.
+		*subtype_id = 0;
+		return true;
+	}
+	
+	struct tempered_type_hid_query_result result;
+	
+	if ( !tempered_type_hid_query( device, &subtype_data->query, &result ) )
+	{
+		return false;
+	}
+	
+	int string_length = result.length;
+	char subtype_string[64];
+	
+	if ( result.length > 0 )
+	{
+		memcpy(subtype_string, &result.data, result.length);
+	}
+	
+	struct tempered_type_hid_query next_response_query = { .length = -1 };
+	for ( int i = 1 ; i < subtype_data->response_count ; i++ )
+	{
+		if ( !tempered_type_hid_query( device, &next_response_query, &result ) )
+		{
+			return false;
+		}
+		if ( string_length + result.length >= 64 )
+		{
+			tempered_set_error(
+				device, strdup( "The subtype string was too long." )
+			);
+			return false;
+		}
+		if ( result.length > 0 )
+		{
+			memcpy(&(subtype_string[string_length]), &result.data, result.length);
+			string_length += result.length;
+		}
+	}
+	
+	subtype_string[string_length] = '\0';
+	
+	for ( int i = 0 ; subtype_data->subtype_strings[i] != NULL ; i++ )
+	{
+		if ( strcmp(subtype_string, subtype_data->subtype_strings[i]) == 0 )
+		{
+			// Found the subtype, use the array index as the subtype ID.
+			*subtype_id = i;
+			return true;
+		}
+	}
+	
+	int size = snprintf(
+		NULL, 0, "Unknown device subtype string: %s",
+		subtype_string
+	);
+	// TODO: check that size >= 0
+	size++;
+	char *error = malloc( size );
+	size = snprintf(
+		error, size, "Unknown device subtype string: %s",
+		subtype_string
+	);
+	tempered_set_error( device, error );
+	return false;
+}
+
 bool tempered_type_hid_read_sensors( tempered_device* device )
 {
 	struct temper_subtype_hid *subtype =
@@ -256,23 +334,27 @@ bool tempered_type_hid_query(
 	
 	hid_device *hid_dev = device_data->hid_dev;
 	
-	int size = hid_write( hid_dev, query->data, query->length );
-	if ( size <= 0 )
+	int size;
+	if ( query->length >= 0 )
 	{
-		size = snprintf(
-			NULL, 0, "HID write failed: %ls",
-			hid_error( hid_dev )
-		);
-		// TODO: check that size >= 0
-		size++;
-		char *error = malloc( size );
-		size = snprintf(
-			error, size, "HID write failed: %ls",
-			hid_error( hid_dev )
-		);
-		tempered_set_error( device, error );
-		result->length = 0;
-		return false;
+		size = hid_write( hid_dev, query->data, query->length );
+		if ( size <= 0 )
+		{
+			size = snprintf(
+				NULL, 0, "HID write failed: %ls",
+				hid_error( hid_dev )
+			);
+			// TODO: check that size >= 0
+			size++;
+			char *error = malloc( size );
+			size = snprintf(
+				error, size, "HID write failed: %ls",
+				hid_error( hid_dev )
+			);
+			tempered_set_error( device, error );
+			result->length = 0;
+			return false;
+		}
 	}
 	size = hid_read_timeout(
 		hid_dev, result->data, sizeof( result->data ), 1000
