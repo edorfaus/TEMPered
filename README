@@ -38,6 +38,7 @@ directory and run cmake yourself - then change into the build dir and run make.
 [1] The HIDAPI library can be found here: http://www.signal11.us/oss/hidapi/
 with source on GitHub here: https://github.com/signal11/hidapi
 This project uses features not available in version 0.6; use 0.7 or newer.
+On Ubuntu you can find this library in the libhidapi-dev package.
 
 If your system has a dev package for it, that should work, if not, you'll have
 to build it yourself (I suggest in a "hidapi" dir next to the "TEMPered" dir,
