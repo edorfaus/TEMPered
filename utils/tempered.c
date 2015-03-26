@@ -6,6 +6,7 @@
 #include <tempered-util.h>
 
 struct my_options {
+	char * output_type;
 	bool enumerate;
 	struct tempered_util__temp_scale const * temp_scale;
 	int calibration_count;
@@ -30,6 +31,9 @@ void show_help()
 "Known options:\n"
 "    -h\n"
 "    --help                 Show this help text\n"
+"    -t\n"
+"    --type                 Returns only the numeric value of the sensor.\n"
+"                           Known sensors: temperature, humidity, due-point\n"
 "    -e\n"
 "    --enumerate            Enumerate the found devices without reading them.\n"
 "    -s <scale>\n"
@@ -70,6 +74,7 @@ void show_help()
 struct my_options* parse_options( int argc, char *argv[] )
 {
 	struct my_options options = {
+		.output_type = NULL,
 		.enumerate = false,
 		.temp_scale = NULL,
 		.calibration_count = 0,
@@ -79,12 +84,13 @@ struct my_options* parse_options( int argc, char *argv[] )
 	char *temp_scale = "Celsius", *calibration_string = NULL;
 	struct option const long_options[] = {
 		{ "help", no_argument, NULL, 'h' },
+		{ "type", required_argument, NULL, 't' },
 		{ "enumerate", no_argument, NULL, 'e' },
 		{ "scale", required_argument, NULL, 's' },
 		{ "calibrate-temp", required_argument, NULL, 'c' },
 		{ NULL, 0, NULL, 0 }
 	};
-	char const * const short_options = "hes:c:";
+	char const * const short_options = "ht:es:c:";
 	while ( true )
 	{
 		int opt = getopt_long( argc, argv, short_options, long_options, NULL );
@@ -110,6 +116,10 @@ struct my_options* parse_options( int argc, char *argv[] )
 				show_help();
 				return NULL;
 			} break;
+			case 't':
+			{
+				options.output_type = optarg;
+			} break;
 			case 'e':
 			{
 				options.enumerate = true;
@@ -123,6 +133,11 @@ struct my_options* parse_options( int argc, char *argv[] )
 				calibration_string = optarg;
 			} break;
 		}
+	}
+	if ( options.output_type != NULL && !( strcmp(options.output_type, "temperature") == 0 || strcmp(options.output_type, "humidity") == 0 || strcmp(options.output_type, "due-point") == 0 ) )
+	{
+		fprintf( stderr, "Output type not found: %s\n", options.output_type );
+		return NULL;
 	}
 	options.temp_scale = tempered_util__find_temperature_scale( temp_scale );
 	if ( options.temp_scale == NULL )
@@ -193,36 +208,82 @@ void print_device_sensor(
 		( type & TEMPERED_SENSOR_TYPE_TEMPERATURE ) &&
 		( type & TEMPERED_SENSOR_TYPE_HUMIDITY )
 	) {
-		printf(
-			"%s %i: temperature %.2f %s"
-				", relative humidity %.1f%%"
-				", dew point %.1f %s\n",
-			tempered_get_device_path( device ), sensor,
-			options->temp_scale->from_celsius( tempC ),
-			options->temp_scale->symbol,
-			rel_hum,
-			options->temp_scale->from_celsius(
-				tempered_util__get_dew_point( tempC, rel_hum )
-			),
-			options->temp_scale->symbol
-		);
+		if ( options->output_type == NULL )
+		{
+			printf(
+				"%s %i: temperature %.2f %s"
+					", relative humidity %.1f%%"
+					", dew point %.1f %s\n",
+				tempered_get_device_path( device ), sensor,
+				options->temp_scale->from_celsius( tempC ),
+				options->temp_scale->symbol,
+				rel_hum,
+				options->temp_scale->from_celsius(
+					tempered_util__get_dew_point( tempC, rel_hum )
+				),
+				options->temp_scale->symbol
+			);
+		}
+		else if ( strcmp(options->output_type, "temperature") == 0 )
+		{
+			printf(
+				"%.2f",
+				options->temp_scale->from_celsius( tempC )
+			);
+		}
+		else if ( strcmp(options->output_type, "humidity") == 0 )
+		{
+			printf(
+				"%.1f%%",
+				rel_hum
+			);
+		}
+		else if ( strcmp(options->output_type, "due-point") == 0 )
+		{
+			printf(
+				"%.1f",
+				options->temp_scale->from_celsius(
+					tempered_util__get_dew_point( tempC, rel_hum )
+				)
+			);
+		}
 	}
 	else if ( type & TEMPERED_SENSOR_TYPE_TEMPERATURE )
 	{
-		printf(
-			"%s %i: temperature %.2f %s\n",
-			tempered_get_device_path( device ), sensor,
-			options->temp_scale->from_celsius( tempC ),
-			options->temp_scale->symbol
-		);
+		if ( options->output_type == NULL )
+		{
+			printf(
+				"%s %i: temperature %.2f %s\n",
+				tempered_get_device_path( device ), sensor,
+				options->temp_scale->from_celsius( tempC ),
+				options->temp_scale->symbol
+			);
+		}
+		else if ( strcmp(options->output_type, "temperature") == 0 )
+		{
+			printf(
+				"%.2f",
+				options->temp_scale->from_celsius( tempC )
+			);
+		}
 	}
 	else if ( type & TEMPERED_SENSOR_TYPE_HUMIDITY )
 	{
-		printf(
-			"%s %i: relative humidity %.1f%%\n",
-			tempered_get_device_path( device ), sensor,
-			rel_hum
-		);
+		if ( options->output_type == NULL )
+		{
+			printf(
+				"%s %i: relative humidity %.1f%%\n",
+				tempered_get_device_path( device ), sensor,
+				rel_hum
+			);
+		}
+		else if ( strcmp(options->output_type, "humidity") == 0 )
+		{
+			printf(
+				"%.1f%%",
+				rel_hum
+			);
+		}
 	}
 	else
 	{
@@ -290,7 +351,7 @@ int main( int argc, char *argv[] )
 		free_options( options );
 		return 1;
 	}
-	
+
 	struct tempered_device_list *list = tempered_enumerate( &error );
 	if ( list == NULL )
 	{
@@ -336,7 +397,7 @@ int main( int argc, char *argv[] )
 		}
 		tempered_free_device_list( list );
 	}
-	
+
 	if ( !tempered_exit( &error ) )
 	{
 		fprintf( stderr, "%s\n", error );
