@@ -40,6 +40,7 @@ struct temper_type known_temper_types[]={
 				"TEMPerHumV1.0rHu",
 				"TEMPerHumM12V1.0",
 				"TEMPerHumM12V1.2",
+				"TEMPerHumM12V1.3",
 				NULL
 			}
 		},
@@ -110,6 +111,37 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 2,
 					.name = "TEMPerHumM12V1.2",
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_temperature = tempered_type_hid_get_temperature,
+					.get_humidity = tempered_type_hid_get_humidity
+				},
+				.sensor_group_count = 1,
+				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
+					{
+						.query = {
+							.length = 9,
+							.data = (unsigned char[]){ 0, 1, 0x80, 0x33, 1, 0, 0, 0, 0 }
+						},
+						.read_sensors = tempered_type_hid_read_sensor_group,
+						.sensor_count = 1,
+						.sensors = (struct tempered_type_hid_sensor[]){
+							{
+								.get_temperature = tempered_type_hid_get_temperature_si7021,
+								.get_humidity = tempered_type_hid_get_humidity_si7021,
+								.temperature_high_byte_offset = 2,
+								.temperature_low_byte_offset = 3,
+								.humidity_high_byte_offset = 4,
+								.humidity_low_byte_offset = 5
+							}
+						}
+					}
+				}
+			},
+			(struct temper_subtype*)&(struct temper_subtype_hid){
+				.base = {
+					.id = 3,
+					.name = "TEMPerHumM12V1.3",
 					.open = tempered_type_hid_subtype_open,
 					.read_sensors = tempered_type_hid_read_sensors,
 					.get_temperature = tempered_type_hid_get_temperature,
