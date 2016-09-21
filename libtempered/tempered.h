@@ -119,14 +119,15 @@ void tempered_free_device_list( struct tempered_device_list *list );
  * The returned handle should be closed with tempered_close() when you are done
  * using the device.
  * @param list The device list entry that should be opened.
- * @param error If an error occurs and this is not NULL, it will be set to the
- * error message. The returned string is dynamically allocated, and should be
- * freed when you're done with it.
+ * @param error If an error occurs and this is not NULL, the error message will
+ * be written to the given buffer.
+ * @param err_size If the buffer is too small for the error message it will be
+ * truncated.
  * @return The opened device, or NULL on error.
  * @see tempered_close()
  * @see tempered_enumerate()
  */
-tempered_device* tempered_open( struct tempered_device_list *list, char **error );
+tempered_device* tempered_open( struct tempered_device_list *list, char *error, size_t err_size );
 
 /** Close an open device.
  *

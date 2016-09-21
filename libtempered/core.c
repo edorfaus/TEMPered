@@ -133,13 +133,13 @@ static bool tempered_open__find_subtype( tempered_device *device )
 }
 
 /** Open a given device from the list. */
-tempered_device* tempered_open( struct tempered_device_list *list, char **error )
+tempered_device* tempered_open( struct tempered_device_list *list, char *error, size_t err_size )
 {
 	if ( list == NULL )
 	{
 		if ( error != NULL )
 		{
-			*error = strdup( "Invalid device given." );
+			snprintf( error, err_size, "Invalid device given." );
 		}
 		return NULL;
 	}
@@ -150,7 +150,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	{
 		if ( error != NULL )
 		{
-			*error = strdup( "Invalid device given (type not found)." );
+			snprintf( error, err_size, "Invalid device given (type not found)." );
 		}
 		return NULL;
 	}
@@ -158,7 +158,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	{
 		if ( error != NULL )
 		{
-			*error = strdup( "Device type has no open method." );
+			snprintf( error, err_size, "Device type has no open method." );
 		}
 		return NULL;
 	}
@@ -167,7 +167,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	{
 		if ( error != NULL )
 		{
-			*error = strdup( "Could not allocate memory for the device." );
+			snprintf( error, err_size, "Could not allocate memory for the device." );
 		}
 		return NULL;
 	}
@@ -180,7 +180,7 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	{
 		if ( error != NULL )
 		{
-			*error = strdup( "Could not allocate memory for the path." );
+			snprintf( error, err_size, "Could not allocate memory for the path." );
 		}
 		free( device );
 		return NULL;
@@ -191,11 +191,13 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 		{
 			if ( device->error != NULL )
 			{
-				*error = device->error;
+				snprintf( error, err_size, 
+					"Type-specific device open failed with error: %s", device->error
+				);
 			}
 			else
 			{
-				*error = strdup(
+				snprintf( error, err_size,
 					"Type-specific device open failed with no error message."
 				);
 			}
@@ -212,7 +214,8 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 	{
 		if ( error != NULL )
 		{
-			*error = device->error;
+			snprintf( error, err_size, "%s", device->error );
+			free( device->error );
 			device->error = NULL;
 		}
 		tempered_close( device );
@@ -226,12 +229,15 @@ tempered_device* tempered_open( struct tempered_device_list *list, char **error 
 			{
 				if ( device->error != NULL )
 				{
-					*error = device->error;
+					snprintf( error, err_size, 
+						"Type-specific device open failed with error: %s", device->error
+					);
+					free( device->error );
 					device->error = NULL;
 				}
 				else
 				{
-					*error = strdup(
+					snprintf( error, err_size,
 						"Type-specific device open failed with no error message."
 					);
 				}

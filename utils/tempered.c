@@ -245,15 +245,14 @@ void print_device(
 		);
 		return;
 	}
-	char *error = NULL;
-	tempered_device *device = tempered_open( dev, &error );
+	char error[256];
+	tempered_device *device = tempered_open( dev, error, sizeof(error) );
 	if ( device == NULL )
 	{
 		fprintf(
 			stderr, "%s: Could not open device: %s\n",
 			dev->path, error
 		);
-		free( error );
 		return;
 	}
 	if ( !tempered_read_sensors( device ) )

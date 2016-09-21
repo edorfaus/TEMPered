@@ -60,12 +60,11 @@ void read_device( struct tempered_device_list *dev )
 		dev->interface_number,
 		dev->type_name
 	);
-	char *error = NULL;
-	tempered_device *device = tempered_open( dev, &error );
+	char error[256];
+	tempered_device *device = tempered_open( dev, error, sizeof(error) );
 	if ( device == NULL )
 	{
 		printf( "\tOpen failed, error: %s\n", error );
-		free( error );
 		return;
 	}
 	printf(
