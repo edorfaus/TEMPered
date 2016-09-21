@@ -23,21 +23,59 @@ void tempered_set_error( tempered_device *device, char *error )
 }
 
 /** Initialize the TEMPered library. */
-bool tempered_init( char **error )
+bool tempered_init( char *error, size_t err_size )
 {
-	return temper_type_init( error );
+	if ( error == NULL ) //don't need to handle error messages
+	{
+		return temper_type_init( NULL );
+	}
+
+	char *err;
+	if ( !temper_type_init( &err ) )
+	{
+		snprintf(error, err_size, "%s", err);
+		free(err); //free the damn thing
+
+		return false;
+	}
+	return true;
 }
 
 /** Finalize the TEMPered library. */
-bool tempered_exit( char **error )
+bool tempered_exit( char *error, size_t err_size )
 {
-	return temper_type_exit( error );
+	if ( error == NULL ) //don't need to handle error messages
+	{
+		return temper_type_init( NULL );
+	}
+
+	char *err;
+	if ( !temper_type_exit( &err ) )
+	{
+		snprintf(error, err_size, "%s", err);
+		free(err); //free the damn thing
+
+		return false;
+	}
+	return true;
 }
 
 /** Enumerate the TEMPer devices. */
-struct tempered_device_list* tempered_enumerate( char **error )
+struct tempered_device_list* tempered_enumerate( char *error, size_t err_size )
 {
-	return temper_type_enumerate( error );
+	if ( error == NULL ) //don't need to handle error messages
+	{
+		return temper_type_enumerate( NULL );
+	}
+
+	char *err;
+	struct tempered_device_list *list = temper_type_enumerate( &err );
+	if ( list == NULL )
+	{
+		snprintf(error, err_size, "%s", err);
+		free(err); //free the damn thing
+	}
+	return list;
 }
 
 /** Free the memory used by the given device list. */

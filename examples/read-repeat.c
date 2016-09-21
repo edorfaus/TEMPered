@@ -55,11 +55,11 @@ void read_device_sensor( tempered_device *device, int sensor )
 void read_repeatedly( tempered_device *device )
 {
 	int i;
-	for ( i = 0; i < 10; i++ )
+	for ( i = 0; i < 500; i++ )
 	{
 		if ( i > 0 )
 		{
-			sleep( 5 );
+			sleep( 1 );
 		}
 		if ( !tempered_read_sensors( device ) )
 		{
@@ -83,7 +83,7 @@ void read_repeatedly( tempered_device *device )
 tempered_device* open_device( char *dev_path )
 {
 	char *error = NULL;
-	struct tempered_device_list *list = tempered_enumerate( &error );
+	struct tempered_device_list *list = tempered_enumerate( error, sizeof(error) );
 	if ( list == NULL )
 	{
 		if ( error == NULL )
@@ -135,11 +135,10 @@ int main( int argc, char *argv[] )
 		fprintf( stderr, "Usage: read-repeat <device>\n" );
 		return 1;
 	}
-	char *error = NULL;
-	if ( !tempered_init( &error ) )
+	char error[256];
+	if ( !tempered_init( error, sizeof(error) ) )
 	{
 		fprintf( stderr, "Failed to initialize libtempered: %s\n", error );
-		free( error );
 		return 1;
 	}
 	
@@ -150,10 +149,9 @@ int main( int argc, char *argv[] )
 		tempered_close( device );
 	}
 	
-	if ( !tempered_exit( &error ) )
+	if ( !tempered_exit( error, sizeof(error) ) )
 	{
 		fprintf( stderr, "Failed to shut down libtempered: %s\n", error );
-		free( error );
 		return 1;
 	}
 	return 0;
