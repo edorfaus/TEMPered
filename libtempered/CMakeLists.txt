@@ -8,6 +8,7 @@ endif()
 
 if (BUILD_SHARED_LIB)
 	add_library(tempered-shared SHARED ${libtempered_FILES})
+	target_link_libraries(tempered-shared ${HIDAPI_LINK_LIBS})
 	set_target_properties(tempered-shared PROPERTIES
 		OUTPUT_NAME tempered
 		SOVERSION 0
@@ -22,6 +23,7 @@ endif()
 
 if (BUILD_STATIC_LIB)
 	add_library(tempered-static STATIC ${libtempered_FILES})
+	target_link_libraries(tempered-static ${HIDAPI_LINK_LIBS})
 	set_target_properties(tempered-static PROPERTIES
 		OUTPUT_NAME tempered
 	)
