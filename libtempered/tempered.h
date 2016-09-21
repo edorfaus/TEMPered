@@ -70,37 +70,40 @@ typedef struct tempered_device_ tempered_device;
  * necessary, as it will be called automatically when needed, but should be
  * called at the start of execution if there's a chance the library will be
  * used by multiple threads simultaneously.
- * @param error If an error occurs and this is not NULL, it will be set to the
- * error message. The returned string is dynamically allocated, and should be
- * freed when you're done with it.
+ * @param error If an error occurs and this is not NULL, the error message will
+ * be written to the given buffer.
+ * @param err_size If the buffer is too small for the error message it will be
+ * truncated.
  * @return true on success, false on error.
  */
-bool tempered_init( char **error );
+bool tempered_init( char *error, size_t err_size );
 
 /** Finalize the TEMPered library.
  *
  * This function should be called at the end of execution to avoid memory leaks.
- * @param error If an error occurs and this is not NULL, it will be set to the
- * error message. The returned string is dynamically allocated, and should be
- * freed when you're done with it.
+ * @param error If an error occurs and this is not NULL, the error message will
+ * be written to the given buffer.
+ * @param err_size If the buffer is too small for the error message it will be
+ * truncated.
  * @return true on success, false on error.
  */
-bool tempered_exit( char **error );
+bool tempered_exit( char *error, size_t err_size );
 
 /** Enumerate the TEMPer devices.
  *
  * This function returns a linked list of all the recognized TEMPer devices
  * attached to the system (excluding the ones that are ignored).
  *
- * @param error If an error occurs and this is not NULL, it will be set to the
- * error message. The returned string is dynamically allocated, and should be
- * freed when you're done with it.
+ * @param error If an error occurs and this is not NULL, the error message will
+ * be written to the given buffer.
+ * @param err_size If the buffer is too small for the error message it will be
+ * truncated.
  * @return A pointer to the first device in the enumerated list, or NULL on
  * error. This list should be freed with tempered_free_device_list when you
  * are done with it.
  * If no devices were found, NULL is returned and the error remains unset.
  */
-struct tempered_device_list* tempered_enumerate( char **error );
+struct tempered_device_list* tempered_enumerate( char *error, size_t err_size );
 
 /** Free the memory used by the given device list.
  *
