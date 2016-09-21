@@ -82,19 +82,11 @@ void read_repeatedly( tempered_device *device )
 /** Open the device with the given device path. */
 tempered_device* open_device( char *dev_path )
 {
-	char *error = NULL;
+	char error[256];
 	struct tempered_device_list *list = tempered_enumerate( error, sizeof(error) );
 	if ( list == NULL )
 	{
-		if ( error == NULL )
-		{
-			printf( "No devices were found.\n" );
-		}
-		else
-		{
-			fprintf( stderr, "Failed to enumerate devices: %s\n", error );
-			free( error );
-		}
+		fprintf( stderr, "Failed to enumerate devices: %s\n", error );
 		return NULL;
 	}
 	tempered_device *device = NULL;
@@ -105,7 +97,7 @@ tempered_device* open_device( char *dev_path )
 		if ( strcmp( dev->path, dev_path ) == 0 )
 		{
 			found = true;
-			device = tempered_open( dev, &error );
+			device = tempered_open( dev, error, sizeof(error) );
 			break;
 		}
 	}
@@ -118,7 +110,6 @@ tempered_device* open_device( char *dev_path )
 				stderr, "Opening %s failed, error: %s\n",
 				dev_path, error
 			);
-			free( error );
 		}
 		else
 		{
