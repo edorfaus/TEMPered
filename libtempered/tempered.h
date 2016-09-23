@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdlib.h>
 #include <stdbool.h>
 
 /** This file contains the headers that comprise the public API of the TEMPered
