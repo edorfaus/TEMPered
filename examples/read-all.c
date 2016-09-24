@@ -60,12 +60,11 @@ void read_device( struct tempered_device_list *dev )
 		dev->interface_number,
 		dev->type_name
 	);
-	char *error = NULL;
-	tempered_device *device = tempered_open( dev, &error );
+	char error[256];
+	tempered_device *device = tempered_open( dev, error, sizeof(error) );
 	if ( device == NULL )
 	{
 		printf( "\tOpen failed, error: %s\n", error );
-		free( error );
 		return;
 	}
 	printf(
@@ -96,15 +95,14 @@ void read_device( struct tempered_device_list *dev )
 
 int main( void )
 {
-	char *error = NULL;
-	if ( !tempered_init( &error ) )
+	char error[256];
+	if ( !tempered_init( error, sizeof(error) ) )
 	{
 		fprintf( stderr, "Failed to initialize libtempered: %s\n", error );
-		free( error );
 		return 1;
 	}
 	
-	struct tempered_device_list *list = tempered_enumerate( &error );
+	struct tempered_device_list *list = tempered_enumerate( error, sizeof(error) );
 	if ( list == NULL )
 	{
 		if ( error == NULL )
@@ -114,7 +112,6 @@ int main( void )
 		else
 		{
 			fprintf( stderr, "Failed to enumerate devices: %s\n", error );
-			free( error );
 		}
 	}
 	else
@@ -127,10 +124,9 @@ int main( void )
 		tempered_free_device_list( list );
 	}
 	
-	if ( !tempered_exit( &error ) )
+	if ( !tempered_exit( error, sizeof(error) ) )
 	{
 		fprintf( stderr, "Failed to shut down libtempered: %s\n", error );
-		free( error );
 		return 1;
 	}
 	return 0;
