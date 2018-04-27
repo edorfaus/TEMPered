@@ -2,11 +2,21 @@
 
 output_config() {
     echo "graph_title TEMPered Readings"
-    echo "plugins.label Temperature readings from TEMPered"
+    count=0
+    for i in $(tempered_reading)
+    do
+        echo "temp_$count.label Temp $count"
+        count=$((count+1))
+    done
 }
 
 output_values() {
-    printf "plugins.value %f\n" $(tempered_reading)
+    count=0
+    for i in $(tempered_reading)
+    do
+        printf "temp_%d.value %f\n" $count $i
+        count=$((count+1))
+    done
 }
 
 tempered_reading() {
