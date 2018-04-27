@@ -2,6 +2,7 @@
 
 output_config() {
     echo "graph_title TEMPered Readings"
+    echo "graph_category sensors"
     count=0
     for i in $(tempered_reading)
     do
