@@ -1,0 +1,54 @@
+#!/bin/sh
+
+output_config() {
+    echo "graph_title TEMPered Readings"
+    echo "graph_category sensors"
+    echo "graph_vlabel Degrees Celsius"
+    echo "graph_info Temperature readings taken from TEMPere devices"
+    count=0
+    for i in $(tempered_reading)
+    do
+        echo "temp_$count.label Temp $count"
+        count=$((count+1))
+    done
+}
+
+output_values() {
+    count=0
+    for i in $(tempered_reading)
+    do
+        printf "temp_%d.value %f\n" $count $i
+        count=$((count+1))
+    done
+}
+
+tempered_reading() {
+    /usr/local/bin/tempered | grep -oE "\-{0,1}[[:digit:]]+\.[[:digit:]]+"
+}
+
+output_usage() {
+    printf >&2 "%s - munin plugin to show TEMPered readings\n" ${0##*/}
+    printf >&2 "Usage: %s [config]\n" ${0##*/}
+}
+
+case $# in
+    0)
+        output_values
+        ;;
+    1)
+        case $1 in
+            config)
+                output_config
+                ;;
+            *)
+                output_usage
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        output_usage
+        exit 1
+        ;;
+esac
+
