@@ -409,7 +409,7 @@ struct temper_type known_temper_types[]={
 		}
 	},
 	{
-		.name="TEMPerGold_V3.1",
+		.name="TEMPer2V3.1 or TEMPer2V3.3",
 		.vendor_id=0x413d,
 		.product_id=0x2107,
 		.interface_number=1,
@@ -425,6 +425,7 @@ struct temper_type known_temper_types[]={
 			.response_count = 2,
 			.subtype_strings = (char *[]){
 				"TEMPerGold_V3.1 ",
+				"TEMPerX_V3.3    ",
 				NULL
 			}
 		},
@@ -433,6 +434,33 @@ struct temper_type known_temper_types[]={
 				.base = {
 					.id = 0,
 					.name = "TEMPerGold_V3.1",
+					.open = tempered_type_hid_subtype_open,
+					.read_sensors = tempered_type_hid_read_sensors,
+					.get_temperature = tempered_type_hid_get_temperature
+				},
+				.sensor_group_count = 1,
+				.sensor_groups = (struct tempered_type_hid_sensor_group[]){
+					{
+						.query = {
+							.length = 9,
+							.data = (unsigned char[]){ 0, 1, 0x80, 0x33, 1, 0, 0, 0, 0 }
+						},
+						.read_sensors = tempered_type_hid_read_sensor_group,
+						.sensor_count = 1,
+						.sensors = (struct tempered_type_hid_sensor[]){
+							{
+								.get_temperature = tempered_type_hid_get_temperature_simple,
+								.temperature_high_byte_offset = 2,
+								.temperature_low_byte_offset = 3
+							}
+						}
+					}
+				}
+			},
+			(struct temper_subtype*)&(struct temper_subtype_hid){
+				.base = {
+					.id = 1,
+					.name = "TEMPerX_V3.3",
 					.open = tempered_type_hid_subtype_open,
 					.read_sensors = tempered_type_hid_read_sensors,
 					.get_temperature = tempered_type_hid_get_temperature
