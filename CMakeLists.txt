@@ -38,7 +38,8 @@ find_path(HIDAPI_HEADER_DIR hidapi.h
 )
 
 if (BUILD_HIDAPI_SHARED)
-	find_library(HIDAPI_LIB NAMES hidapi-hidraw hidapi-libusb
+	# Under MSYS2 MinGW-w64 the filename of the import library is libhidapi.dll.a
+	find_library(HIDAPI_LIB NAMES hidapi-hidraw hidapi-libusb hidapi.dll
 		PATHS ../hidapi ../hidapi.git
 		PATH_SUFFIXES linux/.libs libusb/.libs linux libusb mac
 		DOC "The location of the HIDAPI shared library file"
@@ -54,7 +55,7 @@ else()
 	)
 	set(HIDAPI_STATIC_OBJECT ${HIDAPI_OBJECT})
 	find_package(PkgConfig REQUIRED)
-	if (HIDAPI_OBJECT MATCHES \(-libusb|/libusb/(.libs/)?hid\)\\.o\$)
+	if (HIDAPI_OBJECT MATCHES "\(-libusb|/libusb/(.libs/)?hid\)\\.o\$")
 		pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
 		set(HIDAPI_LINK_LIBS ${LIBUSB_LIBRARIES} rt pthread)
 	else()
