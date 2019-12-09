@@ -33,7 +33,7 @@ void show_help()
 "    --help                 Show this help text\n"
 "    -t\n"
 "    --type                 Returns only the numeric value of the sensor.\n"
-"                           Known sensors: temperature, humidity, due-point\n"
+"                           Known sensors: temperature, humidity, dew point\n"
 "    -e\n"
 "    --enumerate            Enumerate the found devices without reading them.\n"
 "    -s <scale>\n"
@@ -134,7 +134,7 @@ struct my_options* parse_options( int argc, char *argv[] )
 			} break;
 		}
 	}
-	if ( options.output_type != NULL && !( strcmp(options.output_type, "temperature") == 0 || strcmp(options.output_type, "humidity") == 0 || strcmp(options.output_type, "due-point") == 0 ) )
+	if ( options.output_type != NULL && !( strcmp(options.output_type, "temperature") == 0 || strcmp(options.output_type, "humidity") == 0 || strcmp(options.output_type, "dew point") == 0 ) )
 	{
 		fprintf( stderr, "Output type not found: %s\n", options.output_type );
 		return NULL;
@@ -238,7 +238,7 @@ void print_device_sensor(
 				rel_hum
 			);
 		}
-		else if ( strcmp(options->output_type, "due-point") == 0 )
+		else if ( strcmp(options->output_type, "dew point") == 0 )
 		{
 			printf(
 				"%.1f",
