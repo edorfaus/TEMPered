@@ -31,7 +31,6 @@ void show_help()
 "Known options:\n"
 "    -h\n"
 "    --help                 Show this help text\n"
-"    -t\n"
 "    -t <type>\n"
 "    --type <type>          Returns only the numeric value of the sensor.\n"
 "                           Known types: temperature, humidity, \"dew point\"\n"
